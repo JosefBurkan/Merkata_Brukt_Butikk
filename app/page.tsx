@@ -7,9 +7,12 @@ export default function Home() {
 
   return (
       <main>
+        <h1>Welcome to Our Store</h1>
+        <p>Explore our collection of unique items!</p>
+        <p>Click the button below to learn more about us.</p>
           <button
           type="button"
-          onClick={() => router.push('/aboutUs')}
+          onClick={() => router.push('/about')}
         >
           Go to About Us
         </button>
