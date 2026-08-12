@@ -116,6 +116,9 @@ a {
 .page-content {
   width: 100%;
   flex: 1;
+
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -344,7 +347,7 @@ a {
 
 .about-page {
   width: 100%;
-  min-height: 65vh;
+  flex: 1;
 
   padding: 80px clamp(25px, 8vw, 140px);
 
