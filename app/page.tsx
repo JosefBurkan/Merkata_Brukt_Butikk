@@ -5,7 +5,7 @@ export default function Home() {
     <main className="home-page">
       <section className="hero">
         <div className="hero-text">
-          <h1>Velkommen til Merkatá Bruktbutikk</h1>
+          <h1>Velkommen til Merkatå Bruktbutikk</h1>
 
           <p>
             Hos oss finner du et spennende utvalg av brukte skatter, vintage,
@@ -18,7 +18,7 @@ export default function Home() {
             favoritter en ny eier.
           </p>
 
-          <Link href="/about">Les mer om oss</Link>
+          <Link href="/about">Les mer</Link>
         </div>
 
         <div className="hero-image">
