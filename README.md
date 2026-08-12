@@ -1,0 +1,1 @@
+Merkatå bruktbutikk
