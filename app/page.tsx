@@ -1,30 +1,86 @@
-'use client'; // Required for hooks and event handlers
-import { useRouter } from 'next/navigation'; // Correct import for App Router
+import Link from "next/link";
 
 export default function Home() {
-
-    const router = useRouter();
-
   return (
-      <main>
-        <h1 style={{ color: "black", marginTop: "10px" }}>Velkommen til Merkatå bruktbutikk</h1>
-      <p style={{ color: "black", marginTop: "10px" }}>
-        
-        <br/>Hos oss finner du et spennende utvalg av brukte skatter, vintage, retro, antikviteter og unike gjenstander med historie. 
-        <br/> Vi tror at gjenbruk handler om mer enn å spare penger.
-        <br/> Det handler om å ta vare på kvalitet, redusere unødvendig forbruk og gi gamle favoritter en ny eier.
-      </p>
-          <button style={{ color: "black", marginTop: "10px" }}
-          type="button"
-          onClick={() => router.push('/about')}
-        >
-          Go to About Us
-      </button>
-      
+
+    <main className="home-page">
+      <section className="hero">
+        <div className="hero-text">
+          <h1>Velkommen til Merkatå Bruktbutikk</h1>
+
+          <p>
+            Hos oss finner du et spennende utvalg av brukte skatter, vintage,
+            retro, antikviteter og unike gjenstander med historie.
+          </p>
+
+          <p>
+            Vi tror at gjenbruk handler om mer enn å spare penger. Det handler
+            om å ta vare på kvalitet, redusere unødvendig forbruk og gi gamle
+            favoritter en ny eier.
+          </p>
+
+          <Link href="/about">Les mer</Link>
+        </div>
+
+        <div className="hero-image">
+          {/* Store image goes here */}
+        </div>
+      </section>
+    
       <img
-        class = "h-128 w-128 overflow-hidden absolute right-0 top-0"
+        className = "h-116 w-180 overflow-hidden absolute right-0 top-18"
         src = "/forside_bilde.jpg"
       />
-      </main>
+
+      <section className="news-section">
+        <h2>Nyheter</h2>
+
+        <Link href="/categories">Se resten av produktene →</Link>
+
+        <div className="product-list grid grid-cols-4 gap-x-80">
+          <div className="product-card"></div>
+          <div className="product-card"></div>
+          <div className="product-card"></div>
+          <div className="product-card"></div>
+        </div>
+      </section>
+
+      <section className="map-section">
+        <h2>Google Maps Kart</h2>
+
+        <div className="map-placeholder">
+          Google Maps kommer her
+        </div>
+      </section>
+
+      <section className="contact-section">
+        <h2>Kontakt oss</h2>
+
+        <div className="contact-info">
+          <div>
+            <h3>Adresse:</h3>
+            <p>
+              Schweigaards gate 92,
+              <br />
+              0190 Oslo
+            </p>
+          </div>
+
+          <div>
+            <h3>Telefon:</h3>
+            <p>97 40 65 89</p>
+          </div>
+
+          <div>
+            <h3>Åpningstider:</h3>
+            <p>
+              Tir-Fre 11-18
+              <br />
+              Lør-Søn 12-18
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
