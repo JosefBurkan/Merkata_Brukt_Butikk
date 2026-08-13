@@ -15,9 +15,9 @@ export default function Footer() {
           <h3>Åpningstider:</h3>
 
           <p>
-            Tir–Fre 11–18
+            Tir-Fre 11-18
             <br />
-            Lør–Søn 12–18
+            Lør-Søn 12-18
           </p>
         </div>
 
