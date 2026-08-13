@@ -17,14 +17,12 @@
   --footer: #a76443;
 }
 
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
 
 /* =========================
    GLOBAL
@@ -192,7 +190,6 @@ a {
   background: var(--hero-image);
 }
 
-
 /* =========================
    NEWS
 ========================= */
@@ -228,22 +225,16 @@ a {
 
 .product-list {
   width: min(100%, 1100px);
-
   margin: 0 auto;
-
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-
   gap: 25px;
 }
 
 .product-card {
   min-height: 170px;
-
   background: var(--card);
-
   border-radius: 10px;
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -251,10 +242,8 @@ a {
 
 .product-card:hover {
   transform: translateY(-5px);
-
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
-
 
 /* =========================
    MAP
@@ -292,7 +281,6 @@ a {
 
   border-radius: 4px;
 }
-
 
 /* =========================
    CONTACT
@@ -498,17 +486,6 @@ a {
   .news-section {
     padding: 45px 25px 55px;
   }
-
-  .product-list {
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 15px;
-  }
-
-  .product-card {
-    min-height: 130px;
-  }
-
 
   /* MAP */
 
