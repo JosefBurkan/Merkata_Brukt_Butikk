@@ -23,22 +23,19 @@ export default function Home() {
         </div>
 
         <div className="hero-image">
-          {/* Store image goes here */}
+          <img
+          className = "h-116 w-[100vw] lg::w-[50vw] overflow-hidden lg::absolute right-0 top-18"
+          src = "/forside_bilde.jpg"
+        />
         </div>
       </section>
     
-      <img
-        className = "h-116 w-180 overflow-hidden absolute right-0 top-18"
-        src = "/forside_bilde.jpg"
-      />
-
       <section className="news-section">
         <h2>Nyheter</h2>
 
         <Link href="/categories">Se resten av produktene →</Link>
 
-        <div className="product-list grid grid-cols-4 gap-x-80">
-          <div className="product-card"></div>
+        <div className="product-list grid grid-cols-1 lg:grid-cols-3 gap-40 justify-items-center">
           <div className="product-card"></div>
           <div className="product-card"></div>
           <div className="product-card"></div>

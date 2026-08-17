@@ -4,7 +4,7 @@ export default function Categories() {
             <section className="news-section">
                 <h2 className="pb-10">Kategorier</h2>
 
-                <div className="product-list grid grid-cols-3 gap-x-50 ml-30">
+                <div className="product-list grid grid-cols-1 lg:grid-cols-3 gap-50 justify-items-center mx-auto">
                     <div className="product-card">elektronikk</div>
                     <div className="product-card">møbler</div>
                     <div className="product-card">fritid</div>
