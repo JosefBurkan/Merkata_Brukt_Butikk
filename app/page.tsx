@@ -2,6 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
+
     <main className="home-page">
       <section className="hero">
         <div className="hero-text">
@@ -25,13 +26,18 @@ export default function Home() {
           {/* Store image goes here */}
         </div>
       </section>
+    
+      <img
+        className = "h-116 w-180 overflow-hidden absolute right-0 top-18"
+        src = "/forside_bilde.jpg"
+      />
 
       <section className="news-section">
         <h2>Nyheter</h2>
 
-        <Link href="/produkter">Se resten av produktene →</Link>
+        <Link href="/categories">Se resten av produktene →</Link>
 
-        <div className="product-list">
+        <div className="product-list grid grid-cols-4 gap-x-80">
           <div className="product-card"></div>
           <div className="product-card"></div>
           <div className="product-card"></div>
