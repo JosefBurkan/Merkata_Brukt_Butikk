@@ -1,9 +1,30 @@
 import Link from "next/link";
 
-export default function Home() {
+import { createClient } from '@/supabase/server'
+import { cookies } from 'next/headers'
+
+
+export default async function Home() {
+
+    const cookieStore = await cookies()
+    const supabase = await createClient(cookieStore);
+
+    const { data: products, error } = await supabase
+      .from("Product")
+      .select("*");
+
+    if (error) {
+      console.error(error);
+    }
+  
+    // Her skrives dataen til 'products' tabellen ut
+    console.log("Products:", products);
+    console.log("Error:", error);
+
   return (
 
     <main className="home-page">
+
       <section className="hero">
         <div className="hero-text">
           <h1>Velkommen til Merkatå Bruktbutikk</h1>
