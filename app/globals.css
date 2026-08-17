@@ -6,7 +6,7 @@
 ========================= */
 
 :root {
-  --background: #1f1f1f;
+  --background: #DEA47E;
   --foreground: #ffffff;
 
   --header: #d94a34;
@@ -224,15 +224,16 @@ a {
 }
 
 .product-list {
-  width: min(100%, 1100px);
-  margin: 0 auto;
+  width: min(100%, 900px);
+
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  row-gap: 100px;
 }
 
 .product-card {
   min-height: 170px;
+  width: 300px;
+
   background: var(--card);
   border-radius: 10px;
   transition:
@@ -478,13 +479,6 @@ a {
 
   .hero-image {
     min-height: 250px;
-  }
-
-
-  /* NEWS */
-
-  .news-section {
-    padding: 45px 25px 55px;
   }
 
   /* MAP */
