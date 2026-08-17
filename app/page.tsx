@@ -35,7 +35,7 @@ export default function Home() {
 
         <Link href="/categories">Se resten av produktene →</Link>
 
-        <div className="product-list grid grid-cols-1 lg:grid-cols-3 gap-40 justify-items-center">
+        <div className="product-list grid grid-cols-1 lg:grid-cols-3 gap-40 justify-items-center mx-auto">
           <div className="product-card"></div>
           <div className="product-card"></div>
           <div className="product-card"></div>
