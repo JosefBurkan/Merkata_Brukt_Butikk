@@ -2,7 +2,7 @@
 
 
 /* =========================
-   COLORS
+   COLORS 
 ========================= */
 
 :root {
@@ -428,10 +428,6 @@ a {
 
   .hero {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .product-list {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 
