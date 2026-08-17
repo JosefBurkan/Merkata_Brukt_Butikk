@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Merkatá Bruktbutikk",
+  title: "Merkatå Bruktbutikk",
   description: "Bruktbutikk i Oslo",
 };
 

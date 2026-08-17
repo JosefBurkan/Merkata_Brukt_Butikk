@@ -47,6 +47,7 @@ export default async function Home() {
           <img
           className = "h-116 w-[100vw] lg::w-[50vw] overflow-hidden lg::absolute right-0 top-18"
           src = "/forside_bilde.jpg"
+          alt="Merkatå Bruktbutikk"
         />
         </div>
       </section>

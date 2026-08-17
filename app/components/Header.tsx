@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <header className="header">
       <Link href="/" className="logo">
-        MERKATÁ BRUKTBUTIKK
+        MERKATÅ BRUKTBUTIKK
       </Link>
 
       <Navbar />
