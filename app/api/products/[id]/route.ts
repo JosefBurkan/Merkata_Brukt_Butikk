@@ -11,6 +11,7 @@ export async function GET(
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
+  // Find the product where the database ID matches the ID from the URL
   const { data, error } = await supabase
     .from("Product")
     .select("*")
@@ -46,6 +47,8 @@ export async function PATCH(
 
   const body = await request.json();
 
+  // Update only the product whose ID matches the URL
+  // RLS in Supabase decides whether the current user is allowed to update it
   const { data, error } = await supabase
     .from("Product")
     .update(body)
@@ -72,6 +75,8 @@ export async function DELETE(
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
+  // Delete only the product whose ID matches the URL
+  // Supabase RLS verifies whether the current user has permission to delete
   const { data, error } = await supabase
     .from("Product")
     .delete()

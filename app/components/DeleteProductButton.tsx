@@ -11,6 +11,7 @@ export default function DeleteProductButton({
   const router = useRouter();
   const [error, setError] = useState("");
 
+  // Runs when the user clicks the delete button
   async function handleDelete() {
     const confirmed = window.confirm(
       "Er du sikker på at du vil slette dette produktet?"
@@ -20,6 +21,7 @@ export default function DeleteProductButton({
       return;
     }
 
+    // Send a DELETE request to the API route for this specific product
     const response = await fetch(`/api/products/${productId}`, {
       method: "DELETE",
     });
@@ -30,6 +32,8 @@ export default function DeleteProductButton({
       return;
     }
 
+    // Refresh the current page so the deleted product disappears
+    // from the server-rendered product list
     router.refresh();
   }
 

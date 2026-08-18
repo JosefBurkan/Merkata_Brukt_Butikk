@@ -16,6 +16,8 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
+  // Fetch all products from the Product table.
+  // Products are ordered by creation date so the newest products appear first.
   const { data: products, error: productsError } = await supabase
     .from("Product")
     .select("*")
@@ -25,9 +27,12 @@ export default async function AdminPage() {
     console.error(productsError);
   }
 
-  return (
+   return (
+    // Main admin page container
     <main className="min-h-screen bg-[var(--main)] text-gray-900">
       <div className="mx-auto max-w-6xl px-6 py-10">
+
+        {/* Admin page header */}
         <div className="mb-10 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Adminpanel</h1>
@@ -37,9 +42,11 @@ export default async function AdminPage() {
             </p>
           </div>
 
+          {/* Signs the current admin out of Supabase */}
           <LogoutButton />
         </div>
 
+        {/* Link to the page for creating a new product */}
         <div className="mb-8">
           <Link
             href="/admin/products/new"
@@ -49,15 +56,20 @@ export default async function AdminPage() {
           </Link>
         </div>
 
+        {/* Product management section */}
         <section>
-          <h2 className="mb-5 text-xl font-semibold">Produkter</h2>
+          <h2 className="mb-5 text-xl font-semibold">
+            Produkter
+          </h2>
 
+          {/* Display each product as its own card */}
           <div className="grid gap-4">
             {products?.map((product) => (
               <div
                 key={product.id}
                 className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
               >
+                {/* Basic product information */}
                 <div>
                   <h3 className="text-lg font-semibold">
                     {product.name}
@@ -69,7 +81,10 @@ export default async function AdminPage() {
                   </div>
                 </div>
 
+                {/* Actions for editing or deleting this specific product */}
                 <div className="flex items-center gap-3">
+
+                  {/* Dynamic edit link using the product ID */}
                   <Link
                     href={`/admin/products/${product.id}/edit`}
                     className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
@@ -77,6 +92,7 @@ export default async function AdminPage() {
                     Rediger
                   </Link>
 
+                  {/* Sends a DELETE request for this specific product */}
                   <DeleteProductButton productId={product.id} />
                 </div>
               </div>

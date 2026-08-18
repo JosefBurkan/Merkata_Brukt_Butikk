@@ -88,18 +88,24 @@ export default function EditProductPage() {
   return (
     <main className="min-h-screen bg-[var(--main)] text-gray-900">
       <div className="mx-auto max-w-2xl px-6 py-10">
+
+        {/* Page heading */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Rediger produkt</h1>
+          <h1 className="text-3xl font-bold">
+            Rediger produkt
+          </h1>
 
           <p className="mt-1 text-gray-600">
             Endre informasjonen om produktet
           </p>
         </div>
 
+        {/* Product editing form */}
         <form
           onSubmit={handleSubmit}
           className="space-y-6 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
         >
+          {/* Product name */}
           <div>
             <label
               htmlFor="name"
@@ -111,13 +117,17 @@ export default function EditProductPage() {
             <input
               id="name"
               type="text"
+
+              // Controlled input using the current React state
               value={name}
               onChange={(event) => setName(event.target.value)}
+
               required
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             />
           </div>
 
+          {/* Optional product age */}
           <div>
             <label
               htmlFor="age"
@@ -136,6 +146,7 @@ export default function EditProductPage() {
             />
           </div>
 
+          {/* Product price */}
           <div>
             <label
               htmlFor="price"
@@ -156,6 +167,7 @@ export default function EditProductPage() {
             />
           </div>
 
+          {/* Product description */}
           <div>
             <label
               htmlFor="description"
@@ -173,6 +185,7 @@ export default function EditProductPage() {
             />
           </div>
 
+          {/* Main product category */}
           <div>
             <label
               htmlFor="category"
@@ -198,6 +211,7 @@ export default function EditProductPage() {
             </select>
           </div>
 
+          {/* Optional product sub-category */}
           <div>
             <label
               htmlFor="sub_category"
@@ -215,12 +229,14 @@ export default function EditProductPage() {
             />
           </div>
 
+          {/* Show an error only if loading or updating failed */}
           {error && (
             <p className="text-sm text-red-600">
               {error}
             </p>
           )}
 
+          {/* Submit the updated product */}
           <button
             type="submit"
             className="w-full rounded-lg bg-orange-600 px-5 py-3 font-semibold text-white transition hover:bg-orange-700"
