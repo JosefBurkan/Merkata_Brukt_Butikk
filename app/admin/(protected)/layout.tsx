@@ -2,7 +2,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/supabase/server";
 
-// Nested layout only for routes beneath beneath the (protected) folder.
 export default async function ProtectedAdminLayout({
   children,
 }: {
@@ -13,9 +12,13 @@ export default async function ProtectedAdminLayout({
 
   const { data, error } = await supabase.auth.getClaims();
 
-  if (error || !data?.claims) {
-    redirect("/admin/login");
-  }
+  if (
+  error ||
+  !data?.claims ||
+  data.claims.sub !== process.env.ADMIN_USER_ID
+) {
+  redirect("/admin/login");
+}
 
   return <>{children}</>;
 }
