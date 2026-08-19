@@ -20,7 +20,7 @@ export default async function Home() {
       console.error(error);
     }
   
-    // Her skrives dataen til 'products' tabellen ut
+    // Her skrives dataen til 'products'-tabellen ut
     console.log("Products:", products);
     console.log("Error:", error);
 
