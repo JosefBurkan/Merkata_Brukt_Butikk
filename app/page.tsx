@@ -1,7 +1,9 @@
+
 import Link from "next/link";
 
 import { createClient } from '@/supabase/server'
 import { cookies } from 'next/headers'
+import Carousel from "./components/Carousel";
 
 
 export default async function Home() {
@@ -57,11 +59,10 @@ export default async function Home() {
 
         <Link href="/categories">Se resten av produktene →</Link>
 
-        <div className="product-list grid grid-cols-1 lg:grid-cols-3 gap-40 justify-items-center mx-auto">
-          <div className="product-card"></div>
-          <div className="product-card"></div>
-          <div className="product-card"></div>
-        </div>
+        <Carousel newProducts={products} />
+
+        
+
       </section>
 
       <section className="map-section">
