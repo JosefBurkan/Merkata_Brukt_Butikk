@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from '@/supabase/server'
 import { cookies } from 'next/headers'
 import Carousel from "./components/Carousel";
+import Map from "./components/Map";
 
 
 export default async function Home() {
@@ -60,17 +61,17 @@ export default async function Home() {
         <Link href="/categories">Se resten av produktene →</Link>
 
         <Carousel newProducts={products} />
-
-        
-
       </section>
 
-      <section className="map-section">
+      <section className="map-section ">
         <h2>Google Maps Kart</h2>
 
-        <div className="map-placeholder">
-          Google Maps kommer her
+        <div className="w-full flex justify-center">
+            <div className="w-[90%] max-w-7xl">
+                <Map />
+            </div>
         </div>
+
       </section>
 
       <section className="contact-section">
