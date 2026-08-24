@@ -18,6 +18,8 @@ export default function EditProductPage() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imagePublicId, setImagePublicId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadProduct() {
@@ -36,6 +38,8 @@ export default function EditProductPage() {
       setDescription(data.description ?? "");
       setCategory(data.category ?? "");
       setSubCategory(data.sub_category ?? "");
+      setImageUrl(data.image_url ?? null);
+      setImagePublicId(data.image_public_id ?? null);
 
       setLoading(false);
     }
@@ -47,14 +51,45 @@ export default function EditProductPage() {
     event.preventDefault();
     setError("");
 
+    const formData = new FormData(event.currentTarget);
+
+const imageFile = formData.get("image");
+
+// Start with the existing image
+let newImageUrl = imageUrl;
+let newImagePublicId = imagePublicId;
+
+// Upload a replacement only if the admin selected a new image
+if (imageFile instanceof File && imageFile.size > 0) {
+  const uploadFormData = new FormData();
+  uploadFormData.append("image", imageFile);
+
+  const uploadResponse = await fetch("/api/upload", {
+    method: "POST",
+    body: uploadFormData,
+  });
+
+  const uploadData = await uploadResponse.json();
+
+  if (!uploadResponse.ok) {
+    setError(uploadData.error ?? "Kunne ikke laste opp bildet");
+    return;
+  }
+
+  newImageUrl = uploadData.image_url;
+  newImagePublicId = uploadData.image_public_id;
+}
+
     const product = {
-      name,
-      age: age ? Number(age) : null,
-      price: Number(price),
-      description,
-      category,
-      sub_category: subCategory || null,
-    };
+  name,
+  age: age ? Number(age) : null,
+  price: Number(price),
+  description,
+  category,
+  sub_category: subCategory || null,
+  image_url: newImageUrl,
+  image_public_id: newImagePublicId,
+};
 
     const response = await fetch(`/api/products/${id}`, {
       method: "PATCH",
@@ -228,6 +263,37 @@ export default function EditProductPage() {
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             />
           </div>
+
+          {/* Images */}
+          <div>
+  <label
+    htmlFor="image"
+    className="mb-2 block text-sm font-medium"
+  >
+    Produktbilde
+  </label>
+
+  {/* Show the current image */}
+  {imageUrl && (
+    <img
+      src={imageUrl}
+      alt={name}
+      className="mb-4 h-40 w-40 rounded-lg object-cover"
+    />
+  )}
+
+  <input
+    id="image"
+    name="image"
+    type="file"
+    accept="image/*"
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+  />
+
+  <p className="mt-2 text-sm text-gray-500">
+    Velg et nytt bilde bare hvis du vil erstatte det eksisterende bildet.
+  </p>
+</div>
 
           {/* Show an error only if loading or updating failed */}
           {error && (
