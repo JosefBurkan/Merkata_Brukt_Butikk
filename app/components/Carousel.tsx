@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Product = {
   id: number;
@@ -10,8 +10,6 @@ type Product = {
   image_url: string | null;
 };
 
-// A carousel item can either be a real product
-// or a "Coming soon" placeholder
 type CarouselItem =
   | {
       type: "product";
@@ -27,15 +25,55 @@ export default function Carousel({
 }: {
   newProducts: Product[];
 }) {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(
+    newProducts.length >= 2 ? 1 : 0
+  );
 
-  // Convert real products into carousel items
+  const [visibleCount, setVisibleCount] = useState(1);
+
+  const carouselAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setCurrent(newProducts.length >= 2 ? 1 : 0);
+  }, [newProducts.length]);
+
+  // Measure only the area available for cards
+  useEffect(() => {
+    const carouselArea = carouselAreaRef.current;
+
+    if (!carouselArea) {
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0].contentRect.width;
+
+      // 3 x 300px cards + 2 x 32px gaps
+      if (width >= 964) {
+        setVisibleCount(3);
+      }
+
+      // 2 x 300px cards + 32px gap
+      else if (width >= 632) {
+        setVisibleCount(2);
+      }
+
+      // Mobile / narrow screen
+      else {
+        setVisibleCount(1);
+      }
+    });
+
+    observer.observe(carouselArea);
+
+    return () => observer.disconnect();
+  }, []);
+
   const productItems: CarouselItem[] = newProducts.map((product) => ({
     type: "product",
     product,
   }));
 
-  // Always add three "Coming soon" cards to the carousel
   const placeholderItems: CarouselItem[] = [
     {
       type: "placeholder",
@@ -51,130 +89,172 @@ export default function Carousel({
     },
   ];
 
-  // Real products and placeholders are part of the same carousel
-  const carouselItems = [
+  const carouselItems: CarouselItem[] = [
     ...productItems,
     ...placeholderItems,
   ];
 
-  // Move one position forward and loop back to the beginning
   const next = () => {
     setCurrent(
-      (current + 1) % carouselItems.length
+      (currentIndex) =>
+        (currentIndex + 1) % carouselItems.length
     );
   };
 
-  // Move one position backwards and loop back to the end
   const previous = () => {
     setCurrent(
-      (current - 1 + carouselItems.length) %
+      (currentIndex) =>
+        (currentIndex - 1 + carouselItems.length) %
         carouselItems.length
     );
   };
 
-  // Always display the previous, current and next carousel item
-  const visibleItems = [
-    carouselItems[
-      (current - 1 + carouselItems.length) %
-        carouselItems.length
-    ],
+  let visibleItems: CarouselItem[];
 
-    carouselItems[current],
+  if (visibleCount === 3) {
+    visibleItems = [
+      carouselItems[
+        (current - 1 + carouselItems.length) %
+          carouselItems.length
+      ],
 
-    carouselItems[
-      (current + 1) % carouselItems.length
-    ],
-  ];
+      carouselItems[current],
+
+      carouselItems[
+        (current + 1) % carouselItems.length
+      ],
+    ];
+  } else if (visibleCount === 2) {
+    visibleItems = [
+      carouselItems[current],
+
+      carouselItems[
+        (current + 1) % carouselItems.length
+      ],
+    ];
+  } else {
+    visibleItems = [carouselItems[current]];
+  }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl items-center justify-center gap-6 px-4">
-      {/* Previous button */}
-      <button
-        type="button"
-        onClick={previous}
-        className="text-3xl"
-      >
-        ←
-      </button>
+  <div className="relative mx-auto grid w-full max-w-7xl grid-cols-[44px_minmax(0,1fr)_44px] items-center gap-2 px-2 sm:grid-cols-[48px_minmax(0,1fr)_48px] sm:gap-4 sm:px-4">
 
-      {/* Always display three cards */}
-      <div className="grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {visibleItems.map((item, index) => {
-          // Placeholder card
-          if (item.type === "placeholder") {
-            return (
-              <div
-                key={`${item.id}-${index}`}
-                className="product-card overflow-hidden rounded-xl shadow-sm"
-              >
-                <div className="flex h-64 items-center justify-center bg-gray-100 text-gray-500">
-                  Kommer snart
-                </div>
+    {/* Previous */}
+    <button
+  type="button"
+  onPointerUp={previous}
+  className="relative z-[100] flex h-12 w-12 shrink-0 cursor-pointer select-none items-center justify-center touch-none"
+  aria-label="Forrige produkt"
+>
+  <svg
+    viewBox="0 0 24 24"
+    className="pointer-events-none h-8 w-8 rotate-180"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14" />
+    <path d="m13 6 6 6-6 6" />
+  </svg>
+</button>
 
-                <div className="p-5 text-center">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Nye produkter
-                  </h3>
+    {/* Card area */}
+    <div
+  ref={carouselAreaRef}
+  className="relative z-0 flex min-w-0 flex-1 items-center justify-center gap-8 overflow-hidden pointer-events-none"
+>
+      {visibleItems.map((item, index) => {
+        // On mobile the single card may shrink to fit.
+        // With 2-3 cards each card stays 300px wide.
+        const cardWidth =
+          visibleCount === 1
+            ? "w-full max-w-[300px]"
+            : "w-[300px]";
 
-                  <p className="mt-2 text-sm text-gray-900">
-                    Flere produkter legges ut snart.
-                  </p>
-                  <p className="mt-3 font-semibold text-gray-900">
-                    Følg med!
-                </p>
-                </div>
-              </div>
-            );
-          }
-
-          // Real product card
-          const product = item.product;
-
+        // Coming soon card
+        if (item.type === "placeholder") {
           return (
             <div
-              key={`${product.id}-${index}`}
-              className="product-card overflow-hidden rounded-xl shadow-sm"
+              key={`${item.id}-${index}`}
+              className={`flex h-96 ${cardWidth} min-w-0 shrink-0 flex-col overflow-hidden rounded-xl bg-[var(--card)] shadow-sm`}
             >
-              {/* Product image */}
-              {product.image_url ? (
-                <img
-                  src={product.image_url}
-                  alt={product.name}
-                  className="h-64 w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-64 items-center justify-center bg-gray-100 text-gray-400">
-                  Ingen bilde
-                </div>
-              )}
+              <div className="flex h-64 shrink-0 items-center justify-center bg-gray-100 text-gray-500">
+                Kommer snart
+              </div>
 
-              {/* Product information */}
-              <div className="p-5 text-gray-900">
-                <h3 className="text-lg font-semibold">
-                  {product.name}
+              <div className="flex flex-1 flex-col items-center justify-center p-5 text-center">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Nye produkter
                 </h3>
 
-                <p className="mt-1 text-sm text-gray-900">
-                  {product.category}
-                </p>
-
-                <p className="mt-3 font-semibold">
-                  {product.price} kr
+                <p className="mt-2 text-sm text-gray-900">
+                  Flere produkter legges ut snart.
                 </p>
               </div>
             </div>
           );
-        })}
-      </div>
+        }
 
-      {/* Next button */}
-      <button
-        type="button"
-        onClick={next}
-        className="text-3xl"
-      >
-        →
-      </button>
+        const product = item.product;
+
+        // Real product card
+        return (
+          <div
+            key={`${product.id}-${index}`}
+            className={`flex h-96 ${cardWidth} min-w-0 shrink-0 flex-col overflow-hidden rounded-xl bg-[var(--card)] shadow-sm`}
+          >
+            {product.image_url ? (
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="h-64 w-full shrink-0 object-cover"
+              />
+            ) : (
+              <div className="flex h-64 shrink-0 items-center justify-center bg-gray-100 text-gray-400">
+                Ingen bilde
+              </div>
+            )}
+
+            <div className="flex flex-1 flex-col items-center justify-center p-5 text-center text-gray-900">
+              <h3 className="text-lg font-semibold">
+                {product.name}
+              </h3>
+
+              <p className="mt-1 text-sm">
+                {product.category}
+              </p>
+
+              <p className="mt-3 font-semibold">
+                {product.price} kr
+              </p>
+            </div>
+          </div>
+        );
+      })}
     </div>
-  );
+
+    {/* Next */}
+    <button
+  type="button"
+  onPointerUp={next}
+  className="relative z-[100] flex h-12 w-12 shrink-0 cursor-pointer select-none items-center justify-center touch-none"
+  aria-label="Neste produkt"
+>
+  <svg
+    viewBox="0 0 24 24"
+    className="pointer-events-none h-8 w-8"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14" />
+    <path d="m13 6 6 6-6 6" />
+  </svg>
+</button>
+  </div>
+);
 }
