@@ -12,7 +12,7 @@ export default function Map()
             height={400}
             width="100%"
             mode="place"
-            q="Oslo, Schweigaards gate 92"
+            q="Merkatå Bruktbutikk Oslo, Schweigaards gate 92"
         />
     );
 }

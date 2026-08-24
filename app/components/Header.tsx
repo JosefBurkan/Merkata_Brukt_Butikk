@@ -7,7 +7,7 @@ export default function Header() {
       <Link href="/" className="logo">
         MERKATÅ BRUKTBUTIKK
       </Link>
-
+      
       <Navbar />
     </header>
   );

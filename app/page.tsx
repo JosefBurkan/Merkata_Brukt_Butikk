@@ -64,7 +64,7 @@ export default async function Home() {
       </section>
 
       <section className="map-section ">
-        <h2>Google Maps Kart</h2>
+        <h2>Her hører vi til</h2>
 
         <div className="w-full flex justify-center">
             <div className="w-[90%] max-w-7xl">
