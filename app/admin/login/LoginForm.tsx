@@ -8,7 +8,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-   // Runs when the login form is submitted
+  // Runs when the login form is submitted
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
      // Prevents the browser from refreshing the page when submitting the form
     event.preventDefault();

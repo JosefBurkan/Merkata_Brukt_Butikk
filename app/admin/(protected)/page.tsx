@@ -70,16 +70,32 @@ export default async function AdminPage() {
                 className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
               >
                 {/* Basic product information */}
-                <div>
-                  <h3 className="text-lg font-semibold">
-                    {product.name}
-                  </h3>
+                <div className="flex items-center gap-5">
+  {/* Display the product image if one exists */}
+  {product.image_url ? (
+    <img
+      src={product.image_url}
+      alt={product.name}
+      className="h-20 w-20 rounded-lg object-cover"
+    />
+  ) : (
+    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400">
+      Ingen bilde
+    </div>
+  )}
 
-                  <div className="mt-2 flex gap-4 text-sm text-gray-500">
-                    <span>{product.price} kr</span>
-                    <span>{product.category}</span>
-                  </div>
-                </div>
+  {/* Product information */}
+  <div>
+    <h3 className="text-lg font-semibold">
+      {product.name}
+    </h3>
+
+    <div className="mt-2 flex gap-4 text-sm text-gray-500">
+      <span>{product.price} kr</span>
+      <span>{product.category}</span>
+    </div>
+  </div>
+</div>
 
                 {/* Actions for editing or deleting this specific product */}
                 <div className="flex items-center gap-3">
