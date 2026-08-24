@@ -8,39 +8,76 @@ export default function NewProductPage() {
   const [error, setError] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  event.preventDefault();
+  setError("");
 
-    const formData = new FormData(event.currentTarget);
+  const formData = new FormData(event.currentTarget);
 
-    const product = {
-      name: formData.get("name"),
-      age: formData.get("age")
-        ? Number(formData.get("age"))
-        : null,
-      price: Number(formData.get("price")),
-      description: formData.get("description"),
-      category: formData.get("category"),
-      sub_category: formData.get("sub_category") || null,
-    };
+  // Get the selected image from the form
+  const imageFile = formData.get("image");
 
-    const response = await fetch("/api/products", {
+  // These stay null if no image was selected
+  let imageUrl: string | null = null;
+  let imagePublicId: string | null = null;
+
+  // Upload the image first, if one was selected
+  if (imageFile instanceof File && imageFile.size > 0) {
+    const uploadFormData = new FormData();
+
+    uploadFormData.append("image", imageFile);
+
+    const uploadResponse = await fetch("/api/upload", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
+      body: uploadFormData,
     });
 
-    const data = await response.json();
+    const uploadData = await uploadResponse.json();
 
-    if (!response.ok) {
-      setError(data.error ?? "Kunne ikke opprette produkt");
+    if (!uploadResponse.ok) {
+      setError(uploadData.error ?? "Kunne ikke laste opp bildet");
       return;
     }
 
-    router.push("/admin");
-    router.refresh();
+    // Save the values returned by Cloudinary
+    imageUrl = uploadData.image_url;
+    imagePublicId = uploadData.image_public_id;
   }
+
+  // Create the product after the image upload succeeds
+  const product = {
+    name: formData.get("name"),
+    age: formData.get("age")
+      ? Number(formData.get("age"))
+      : null,
+    price: Number(formData.get("price")),
+    description: formData.get("description"),
+    category: formData.get("category"),
+    sub_category: formData.get("sub_category") || null,
+
+    // Cloudinary values
+    image_url: imageUrl,
+    image_public_id: imagePublicId,
+  };
+
+  // Save the product in Supabase
+  const response = await fetch("/api/products", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(product),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    setError(data.error ?? "Kunne ikke opprette produkt");
+    return;
+  }
+
+  router.push("/admin");
+  router.refresh();
+}
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
@@ -176,6 +213,27 @@ export default function NewProductPage() {
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             />
           </div>
+
+          <div>
+  <label
+    htmlFor="image"
+    className="mb-2 block text-sm font-medium"
+  >
+    Produktbilde
+  </label>
+
+  <input
+    id="image"
+    name="image"
+    type="file"
+    accept="image/*"
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+  />
+
+  <p className="mt-2 text-sm text-gray-500">
+    Maks 5 MB.
+  </p>
+</div>
 
           {/* Display an error only if the API request failed */}
           {error && (

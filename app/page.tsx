@@ -10,11 +10,13 @@ import Map from "./components/Map";
 export default async function Home() {
 
     const cookieStore = await cookies()
-    const supabase = await createClient(cookieStore);
+    const supabase = createClient(cookieStore);
 
     const { data: products, error } = await supabase
-      .from("Product")
-      .select("*");
+  .from("Product")
+  .select("*")
+  .order("created_at", { ascending: false })
+  .limit(6);
 
     if (error) {
       console.error(error);
@@ -60,7 +62,7 @@ export default async function Home() {
 
         <Link href="/categories">Se resten av produktene →</Link>
 
-        <Carousel newProducts={products} />
+        <Carousel newProducts={products ?? []} />
       </section>
 
       <section className="map-section ">
