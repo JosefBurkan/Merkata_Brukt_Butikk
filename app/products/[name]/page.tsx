@@ -1,6 +1,7 @@
 import { createClient } from '@/supabase/server'
 import { cookies } from 'next/headers'
 import SearchBar from '@/app/components/SearchBar';
+import Filter from '@/app/components/Filter';
 
 // params for når man går inn på siden (kategorien)
 // seachParams for når du søker på noe etter du er inne på siden (navn på produkt)
@@ -9,10 +10,15 @@ export default async function Products({
     searchParams,
 }: {
     params: Promise<{ name: string }>;
-    searchParams: Promise<{ search?: string }>;
+    searchParams: Promise<{
+        search?: string;
+        maxPrice?: string;
+        minPrice?: string;
+        sub_category?: string;
+    }>;
 }) {
     const { name } = await params;
-    const { search } = await searchParams;
+    const { search, maxPrice, minPrice, sub_category } = await searchParams;
 
     const cookieStore = await cookies();
     const supabase = await createClient(cookieStore);
@@ -22,9 +28,22 @@ export default async function Products({
         .select("*")
         .eq("category", name);
 
-    // Sjekk om noe har blitt søkt på
+    // Søk
     if (search) {
         query = query.ilike("name", `%${search}%`);
+    }
+
+    // Makspris
+    if (maxPrice) {
+        query = query.lte("price", Number(maxPrice));
+    }
+
+    if (minPrice) {
+        query = query.lte("price", Number(maxPrice));
+    }
+
+    if (sub_category) {
+        query = query.eq("sub_category", sub_category);
     }
 
     const { data: products, error } = await query;
@@ -39,11 +58,17 @@ export default async function Products({
                 Forside / Produkter / {name}
             </p>
 
-            <div className="flex items-center justify-center">
+            <div className="filter-container">
+                <div className="filter">
+                    <Filter name={name} />
+                </div>
+            </div>
+
+            <div className="flex items-center justify-center -mt-50">
                 <SearchBar className="text-center" />   
             </div>
 
-            <h1 className="text-3xl font-bold text-center p-10">
+            <h1 className="text-3xl font-bold text-center p-5">
                 {name}
             </h1>
 
