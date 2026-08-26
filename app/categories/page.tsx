@@ -9,7 +9,7 @@ export default function Categories() {
 
     const dynamicRoute = (name) =>
     {
-        router.push(`products/${name}`)
+        router.push(`/products/${name}`)
     }    
     
     return (
