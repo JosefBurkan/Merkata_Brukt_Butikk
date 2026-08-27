@@ -1,14 +1,6 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/supabase/server";
-
-const allowedCategories = [
-  "Elektronikk",
-  "Møbler",
-  "Fritid",
-  "Klær",
-  "Musikk",
-  "Annet",
-];
+import { categories } from "@/lib/categories";
 
 // GET SUBCATEGORIES
 
@@ -88,12 +80,16 @@ export async function POST(request: Request) {
   }
 
   // Category must be one of our actual categories
-  if (!allowedCategories.includes(category)) {
-    return Response.json(
-      { error: "Ugyldig kategori" },
-      { status: 400 }
-    );
-  }
+  if (
+  !categories.includes(
+    category as (typeof categories)[number]
+  )
+) {
+  return Response.json(
+    { error: "Ugyldig kategori" },
+    { status: 400 }
+  );
+}
 
   // Create the new subcategory
   const { data, error } = await supabase
