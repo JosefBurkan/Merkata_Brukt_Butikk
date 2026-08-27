@@ -1,10 +1,21 @@
-import { createClient } from '@/supabase/server'
-import { cookies } from 'next/headers'
-import SearchBar from '@/app/components/SearchBar';
-import Filter from '@/app/components/Filter';
+import { createClient } from "@/supabase/server";
+import { cookies } from "next/headers";
+import SearchBar from "@/app/components/SearchBar";
+import Filter from "@/app/components/Filter";
 
-// params for når man går inn på siden (kategorien)
-// seachParams for når du søker på noe etter du er inne på siden (navn på produkt)
+// URL-navnet brukes som slug.
+// Verdien er det faktiske kategorinavnet som finnes i databasen.
+const categoryMap: Record<string, string> = {
+    elektronikk: "Elektronikk",
+    mobler: "Møbler",
+    fritid: "Fritid",
+    klaer: "Klær",
+    musikk: "Musikk",
+    annet: "Annet",
+};
+
+// params brukes når man går inn på kategorien.
+// searchParams brukes for søk og filtrering.
 export default async function Products({
     params,
     searchParams,
@@ -18,35 +29,70 @@ export default async function Products({
     }>;
 }) {
     const { name } = await params;
-    const { search, maxPrice, minPrice, sub_category } = await searchParams;
+
+    const {
+        search,
+        maxPrice,
+        minPrice,
+        sub_category,
+    } = await searchParams;
+
+    // Gjør f.eks. "elektronikk" om til "Elektronikk"
+    // og "mobler" om til "Møbler".
+    const category = categoryMap[name];
 
     const cookieStore = await cookies();
-    const supabase = await createClient(cookieStore);
+    const supabase = createClient(cookieStore);
+
+    // Hvis URL-en inneholder en kategori som ikke finnes
+    if (!category) {
+        return (
+            <main className="p-10 text-center">
+                <h1 className="text-3xl font-bold">
+                    Kategorien finnes ikke
+                </h1>
+            </main>
+        );
+    }
 
     let query = supabase
         .from("Product")
         .select("*")
-        .eq("category", name);
+        .eq("category", category);
 
-    // Søk
+    // Søk på produktnavn
     if (search) {
         query = query.ilike("name", `%${search}%`);
     }
 
     // Makspris
     if (maxPrice) {
-        query = query.lte("price", Number(maxPrice));
+        query = query.lte(
+            "price",
+            Number(maxPrice)
+        );
     }
 
+    // Minimumspris
     if (minPrice) {
-        query = query.lte("price", Number(maxPrice));
+        query = query.gte(
+            "price",
+            Number(minPrice)
+        );
     }
 
+    // Underkategori
     if (sub_category) {
-        query = query.eq("sub_category", sub_category);
+        query = query.eq(
+            "sub_category",
+            sub_category
+        );
     }
 
-    const { data: products, error } = await query;
+    const {
+        data: products,
+        error,
+    } = await query;
 
     if (error) {
         console.error(error);
@@ -54,42 +100,61 @@ export default async function Products({
 
     return (
         <main>
+            {/* Breadcrumb */}
             <p className="p-5 text-black">
-                Forside / Produkter / {name}
+                Forside / Produkter / {category}
             </p>
 
+            {/* Filter */}
             <div className="filter-container">
                 <div className="filter">
                     <Filter name={name} />
                 </div>
             </div>
 
-            <div className="flex items-center justify-center -mt-50">
-                <SearchBar className="text-center" />   
+            {/* Søk */}
+            <div className="-mt-50 flex items-center justify-center">
+                <SearchBar className="text-center" />
             </div>
 
-            <h1 className="text-3xl font-bold text-center p-5">
-                {name}
+            {/* Kategori */}
+            <h1 className="p-5 text-center text-3xl font-bold">
+                {category}
             </h1>
 
-            <div className="product-list grid-cols-1 lg:grid-cols-3 justify-items-center mx-auto gap-50">
-                {products?.map((data) => (
-                    <div className="product-card" key={data.id}>
+            {/* Ingen produkter */}
+            {products?.length === 0 && (
+                <p className="mt-10 text-center text-black">
+                    Ingen produkter funnet i denne kategorien.
+                </p>
+            )}
 
-                        <img
-                            src={data.image_url}
-                            alt={data.name}
-                            className="h-[200px] w-full shrink-0 object-cover rounded-t-lg"
-                        />
+            {/* Produkter */}
+            <div className="product-list mx-auto grid-cols-1 justify-items-center gap-50 lg:grid-cols-3">
+                {products?.map((product) => (
+                    <div
+                        className="product-card"
+                        key={product.id}
+                    >
+                        {product.image_url ? (
+                            <img
+                                src={product.image_url}
+                                alt={product.name}
+                                className="h-[200px] w-full shrink-0 rounded-t-lg object-cover"
+                            />
+                        ) : (
+                            <div className="flex h-[200px] items-center justify-center">
+                                Ingen bilde
+                            </div>
+                        )}
 
-                        <p className="text-2xl font-bold text-center">
-                            {data.name}
+                        <p className="text-center text-2xl font-bold">
+                            {product.name}
                         </p>
 
-                        <p className="text-1xl font-bold text-center">
-                            {data.price},-
+                        <p className="text-center text-lg font-bold">
+                            {product.price},-
                         </p>
-
                     </div>
                 ))}
             </div>

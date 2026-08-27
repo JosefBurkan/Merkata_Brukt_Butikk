@@ -2,96 +2,118 @@
 
 import { useState } from "react";
 
+type Product = {
+    id: number;
+    name: string;
+    price: number;
+    category: string;
+    image_url: string | null;
+};
 
-export default function Carousel({newProducts})
-{
+type CarouselProps = {
+    newProducts: Product[];
+};
 
+export default function Carousel({ newProducts }: CarouselProps) {
     const [current, setCurrent] = useState(0);
 
-    // For å bevege karusellen fremover
-    // '%' brukes så den skal kunne loope rundt
+    // Hvis det ikke finnes noen produkter,
+    // viser vi bare en melding i stedet for å krasje siden.
+    if (newProducts.length === 0) {
+        return (
+            <div className="py-10 text-center">
+                <p>Ingen produkter tilgjengelig akkurat nå.</p>
+            </div>
+        );
+    }
+
+    // Gå ett produkt fremover.
+    // Functional update gjør at vi alltid bruker nyeste state-verdi.
     const next = () => {
-        setCurrent((current + 1) % newProducts.length);
+        setCurrent((previousCurrent) =>
+            (previousCurrent + 1) % newProducts.length
+        );
     };
 
-    // Samme, men bakover
+    // Gå ett produkt bakover.
     const previous = () => {
-        setCurrent((current - 1 + newProducts.length) % newProducts.length);
+        setCurrent((previousCurrent) =>
+            (previousCurrent - 1 + newProducts.length) %
+            newProducts.length
+        );
+    };
+
+    // Finn produktene som skal vises.
+    const previousProduct =
+        newProducts[
+            (current - 1 + newProducts.length) %
+            newProducts.length
+        ];
+
+    const currentProduct = newProducts[current];
+
+    const nextProduct =
+        newProducts[
+            (current + 1) % newProducts.length
+        ];
+
+    // Lager et produktkort.
+    // Da slipper vi å skrive den samme JSX-en tre ganger.
+    const renderProduct = (product: Product) => {
+        return (
+            <div className="product-card">
+                {product.image_url ? (
+                    <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="h-[190px] w-full rounded-t-lg object-cover"
+                    />
+                ) : (
+                    <div className="flex h-[190px] w-full items-center justify-center rounded-t-lg bg-black/10">
+                        Ingen bilde
+                    </div>
+                )}
+
+                <p className="text-3xl font-bold">
+                    {product.name}
+                </p>
+
+                <p className="text-lg font-bold">
+                    {product.category}
+                </p>
+
+                <p className="text-lg font-bold">
+                    {product.price},-
+                </p>
+            </div>
+        );
     };
 
     return (
-
-        
         <div className="flex items-center justify-center gap-4">
-            <button onClick={previous}>
+            <button
+                type="button"
+                onClick={previous}
+                aria-label="Forrige produkt"
+            >
                 ←
             </button>
 
-            <div className="product-list grid-cols-1 lg:grid-cols-3 justify-items-center mx-auto gap-50">
+            <div className="product-list mx-auto grid-cols-1 justify-items-center gap-50 lg:grid-cols-3">
+                {renderProduct(previousProduct)}
 
-                {/*Dette er toppkortet*/}
-                <div className="product-card">
-                <img 
-                    src={newProducts[(current - 1 + newProducts.length) % newProducts.length].image_url}
-                    alt={newProducts[(current - 1 + newProducts.length) % newProducts.length].name}
-                    className="h-[190px] w-full shrink-0 object-cover rounded-t-lg"
-                />
-                    <p className="text-3xl font-bold">
-                        {newProducts[(current - 1 + newProducts.length) % newProducts.length].name}
-                    </p>
-                    <p className="text-1xl font-bold">
-                        {newProducts[(current - 1 + newProducts.length) % newProducts.length].category}
-                    </p>
+                {renderProduct(currentProduct)}
 
-                    <p className="text-1xl font-bold">
-                        {newProducts[(current - 1 + newProducts.length) % newProducts.length].price},-
-                    </p>
-                </div>
-
-                {/*Dette er midtkortet*/}
-                <div className="product-card">
-                <img 
-                    src={newProducts[current].image_url}
-                    alt={newProducts[current].name}
-                    className="h-[190px] w-full shrink-0 object-cover rounded-t-lg"
-                />
-                    <p className="text-3xl font-bold">
-                        {newProducts[current].name}
-                    </p>
-                    <p className="text-1xl font-bold">
-                        {newProducts[current].category}
-                    </p>
-
-                    <p className="text-1xl font-bold">
-                        {newProducts[current].price},-
-                    </p>
-                </div>
-
-                {/*Dette er bunnkortet*/}
-                <div className="product-card">
-                <img 
-                    src={newProducts[(current + 1) % newProducts.length].image_url}
-                    alt={newProducts[(current + 1) % newProducts.length].name}
-                    className="h-[190px] w-full shrink-0 object-cover rounded-t-lg"
-                />
-                    <p className="text-3xl font-bold">
-                        {newProducts[(current + 1) % newProducts.length].name}
-                    </p>
-                    <p className="text-1xl font-bold">
-                        {newProducts[(current + 1) % newProducts.length].category}
-                    </p>
-
-                    <p className="text-1xl font-bold">
-                        {newProducts[(current + 1) % newProducts.length].price},-
-                    </p>
-                </div>
-
+                {renderProduct(nextProduct)}
             </div>
 
-            <button onClick={next}>
+            <button
+                type="button"
+                onClick={next}
+                aria-label="Neste produkt"
+            >
                 →
             </button>
-            
         </div>
     );
 }
