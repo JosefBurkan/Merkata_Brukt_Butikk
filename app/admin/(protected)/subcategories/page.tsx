@@ -1,10 +1,8 @@
 import { cookies } from "next/headers";
-
 import { createClient } from "@/supabase/server";
-
 import { categories } from "@/lib/categories";
-
 import DeleteSubCategoryButton from "@/app/components/DeleteSubCategoryButton";
+import BackToAdmin from "@/app/components/BackToAdmin";
 
 type SubCategory = {
   id: number;
@@ -44,6 +42,10 @@ export default async function SubCategoriesPage() {
   return (
     <main className="min-h-screen bg-[var(--main)] px-6 py-10 text-gray-900">
       <div className="mx-auto max-w-4xl">
+
+        <div className="mb-6">
+          <BackToAdmin />
+        </div>
 
         {/* Page heading */}
         <div className="mb-8">

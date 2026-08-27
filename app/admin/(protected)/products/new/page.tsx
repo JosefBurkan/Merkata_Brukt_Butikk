@@ -8,6 +8,7 @@ import {
 
 import { useRouter } from "next/navigation";
 import { categories } from "@/lib/categories";
+import BackToAdmin from "@/app/components/BackToAdmin";
 
 type SubCategory = {
   id: number;
@@ -338,6 +339,9 @@ export default function NewProductPage() {
     <main className="min-h-screen bg-gray-100 text-gray-900">
       <div className="mx-auto max-w-2xl px-6 py-10">
 
+        <div className="mb-6">
+          <BackToAdmin />
+        </div>
         {/* Page heading */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">
