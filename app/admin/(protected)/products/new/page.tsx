@@ -1,83 +1,337 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useState,
+} from "react";
+
 import { useRouter } from "next/navigation";
+
+type SubCategory = {
+  id: number;
+  name: string;
+  category: string;
+};
 
 export default function NewProductPage() {
   const router = useRouter();
+
   const [error, setError] = useState("");
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-  setError("");
+  // Selected main category
+  const [category, setCategory] = useState("");
 
-  const formData = new FormData(event.currentTarget);
+  // Selected subcategory
+  const [subCategory, setSubCategory] = useState("");
 
-  // Get the selected image from the form
-  const imageFile = formData.get("image");
+  // Subcategories belonging to selected category
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
 
-  // These stay null if no image was selected
-  let imageUrl: string | null = null;
-  let imagePublicId: string | null = null;
+  // Loading state when fetching subcategories
+  const [loadingSubCategories, setLoadingSubCategories] =
+    useState(false);
 
-  // Upload the image first, if one was selected
-  if (imageFile instanceof File && imageFile.size > 0) {
-    const uploadFormData = new FormData();
+  // Controls whether the "new subcategory" input is visible
+  const [showNewSubCategory, setShowNewSubCategory] =
+    useState(false);
 
-    uploadFormData.append("image", imageFile);
+  // Name typed into the new subcategory input
+  const [newSubCategoryName, setNewSubCategoryName] =
+    useState("");
 
-    const uploadResponse = await fetch("/api/upload", {
-      method: "POST",
-      body: uploadFormData,
-    });
+  // Loading state while creating a new subcategory
+  const [creatingSubCategory, setCreatingSubCategory] =
+    useState(false);
 
-    const uploadData = await uploadResponse.json();
 
-    if (!uploadResponse.ok) {
-      setError(uploadData.error ?? "Kunne ikke laste opp bildet");
+  // =========================
+  // CATEGORY CHANGE
+  // =========================
+
+  async function handleCategoryChange(
+    event: ChangeEvent<HTMLSelectElement>
+  ) {
+    const selectedCategory = event.target.value;
+
+    setCategory(selectedCategory);
+
+    // Reset subcategory when main category changes
+    setSubCategory("");
+    setSubCategories([]);
+
+    setShowNewSubCategory(false);
+    setNewSubCategoryName("");
+
+    setError("");
+
+    if (!selectedCategory) {
       return;
     }
 
-    // Save the values returned by Cloudinary
-    imageUrl = uploadData.image_url;
-    imagePublicId = uploadData.image_public_id;
+    setLoadingSubCategories(true);
+
+    try {
+      const response = await fetch(
+        `/api/subcategories?category=${encodeURIComponent(
+          selectedCategory
+        )}`
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(
+          data.error ??
+            "Kunne ikke hente underkategorier"
+        );
+
+        return;
+      }
+
+      setSubCategories(data);
+    } catch {
+      setError(
+        "Kunne ikke hente underkategorier"
+      );
+    } finally {
+      setLoadingSubCategories(false);
+    }
   }
 
-  // Create the product after the image upload succeeds
-  const product = {
-    name: formData.get("name"),
-    age: formData.get("age")
-      ? Number(formData.get("age"))
-      : null,
-    price: Number(formData.get("price")),
-    description: formData.get("description"),
-    category: formData.get("category"),
-    sub_category: formData.get("sub_category") || null,
 
-    // Cloudinary values
-    image_url: imageUrl,
-    image_public_id: imagePublicId,
-  };
+  // =========================
+  // SUBCATEGORY CHANGE
+  // =========================
 
-  // Save the product in Supabase
-  const response = await fetch("/api/products", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(product),
-  });
+  function handleSubCategoryChange(
+    event: ChangeEvent<HTMLSelectElement>
+  ) {
+    const value = event.target.value;
 
-  const data = await response.json();
+    // Special option used to create a new subcategory
+    if (value === "__new__") {
+      setSubCategory("");
+      setShowNewSubCategory(true);
 
-  if (!response.ok) {
-    setError(data.error ?? "Kunne ikke opprette produkt");
-    return;
+      return;
+    }
+
+    setSubCategory(value);
+    setShowNewSubCategory(false);
+    setNewSubCategoryName("");
   }
 
-  router.push("/admin");
-  router.refresh();
-}
+
+  // =========================
+  // CREATE NEW SUBCATEGORY
+  // =========================
+
+  async function createSubCategory() {
+    setError("");
+
+    const trimmedName =
+      newSubCategoryName.trim();
+
+    if (!category) {
+      setError("Velg kategori først");
+
+      return;
+    }
+
+    if (!trimmedName) {
+      setError(
+        "Skriv inn navn på underkategorien"
+      );
+
+      return;
+    }
+
+    setCreatingSubCategory(true);
+
+    try {
+      const response = await fetch(
+        "/api/subcategories",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            name: trimmedName,
+            category,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(
+          data.error ??
+            "Kunne ikke opprette underkategori"
+        );
+
+        return;
+      }
+
+      // Add the newly created subcategory
+      // to the dropdown immediately
+      setSubCategories((previous) =>
+        [...previous, data].sort((a, b) =>
+          a.name.localeCompare(
+            b.name,
+            "nb"
+          )
+        )
+      );
+
+      // Automatically select the new subcategory
+      setSubCategory(data.name);
+
+      // Hide and reset the creation input
+      setShowNewSubCategory(false);
+      setNewSubCategoryName("");
+    } catch {
+      setError(
+        "Kunne ikke opprette underkategori"
+      );
+    } finally {
+      setCreatingSubCategory(false);
+    }
+  }
+
+
+  // =========================
+  // CREATE PRODUCT
+  // =========================
+
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    setError("");
+
+    const formData =
+      new FormData(event.currentTarget);
+
+    const imageFile =
+      formData.get("image");
+
+    let imageUrl: string | null = null;
+
+    let imagePublicId: string | null =
+      null;
+
+
+    // =========================
+    // UPLOAD IMAGE
+    // =========================
+
+    if (
+      imageFile instanceof File &&
+      imageFile.size > 0
+    ) {
+      const uploadFormData =
+        new FormData();
+
+      uploadFormData.append(
+        "image",
+        imageFile
+      );
+
+      const uploadResponse =
+        await fetch("/api/upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+      const uploadData =
+        await uploadResponse.json();
+
+      if (!uploadResponse.ok) {
+        setError(
+          uploadData.error ??
+            "Kunne ikke laste opp bildet"
+        );
+
+        return;
+      }
+
+      imageUrl =
+        uploadData.image_url;
+
+      imagePublicId =
+        uploadData.image_public_id;
+    }
+
+
+    // =========================
+    // PRODUCT DATA
+    // =========================
+
+    const product = {
+      name: formData.get("name"),
+
+      age: formData.get("age")
+        ? Number(formData.get("age"))
+        : null,
+
+      price: Number(
+        formData.get("price")
+      ),
+
+      description:
+        formData.get("description"),
+
+      category,
+
+      sub_category: subCategory,
+
+      image_url: imageUrl,
+
+      image_public_id:
+        imagePublicId,
+    };
+
+
+    // =========================
+    // SAVE PRODUCT
+    // =========================
+
+    const response = await fetch(
+      "/api/products",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify(product),
+      }
+    );
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      setError(
+        data.error ??
+          "Kunne ikke opprette produkt"
+      );
+
+      return;
+    }
+
+    router.push("/admin");
+    router.refresh();
+  }
+
 
   return (
     <main className="min-h-screen bg-gray-100 text-gray-900">
@@ -94,11 +348,12 @@ export default function NewProductPage() {
           </p>
         </div>
 
-        {/* Product creation form */}
+
         <form
           onSubmit={handleSubmit}
           className="space-y-6 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
         >
+
           {/* Product name */}
           <div>
             <label
@@ -117,7 +372,8 @@ export default function NewProductPage() {
             />
           </div>
 
-          {/* Optional product age */}
+
+          {/* Product age */}
           <div>
             <label
               htmlFor="age"
@@ -134,6 +390,7 @@ export default function NewProductPage() {
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             />
           </div>
+
 
           {/* Product price */}
           <div>
@@ -155,7 +412,8 @@ export default function NewProductPage() {
             />
           </div>
 
-          {/* Optional product description */}
+
+          {/* Product description */}
           <div>
             <label
               htmlFor="description"
@@ -172,7 +430,8 @@ export default function NewProductPage() {
             />
           </div>
 
-          {/* Main product category */}
+
+          {/* Main category */}
           <div>
             <label
               htmlFor="category"
@@ -184,20 +443,45 @@ export default function NewProductPage() {
             <select
               id="category"
               name="category"
+              value={category}
+              onChange={
+                handleCategoryChange
+              }
               required
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             >
-              <option value="">Velg kategori</option>
-              <option value="Elektronikk">Elektronikk</option>
-              <option value="Møbler">Møbler</option>
-              <option value="Fritid">Fritid</option>
-              <option value="Klær">Klær</option>
-              <option value="Musikk">Musikk</option>
-              <option value="Annet">Annet</option>
+              <option value="">
+                Velg kategori
+              </option>
+
+              <option value="Elektronikk">
+                Elektronikk
+              </option>
+
+              <option value="Møbler">
+                Møbler
+              </option>
+
+              <option value="Fritid">
+                Fritid
+              </option>
+
+              <option value="Klær">
+                Klær
+              </option>
+
+              <option value="Musikk">
+                Musikk
+              </option>
+
+              <option value="Annet">
+                Annet
+              </option>
             </select>
           </div>
 
-          {/* Optional sub-category */}
+
+          {/* Subcategory */}
           <div>
             <label
               htmlFor="sub_category"
@@ -206,49 +490,149 @@ export default function NewProductPage() {
               Underkategori
             </label>
 
-            <input
+            <select
               id="sub_category"
               name="sub_category"
-              type="text"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
-            />
+              value={subCategory}
+              onChange={
+                handleSubCategoryChange
+              }
+              required
+              disabled={
+                !category ||
+                loadingSubCategories
+              }
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            >
+
+              {!category && (
+                <option value="">
+                  Velg kategori først
+                </option>
+              )}
+
+              {category &&
+                loadingSubCategories && (
+                  <option value="">
+                    Henter underkategorier...
+                  </option>
+                )}
+
+              {category &&
+                !loadingSubCategories && (
+                  <>
+                    <option value="">
+                      Velg underkategori
+                    </option>
+
+                    {subCategories.map(
+                      (item) => (
+                        <option
+                          key={item.id}
+                          value={item.name}
+                        >
+                          {item.name}
+                        </option>
+                      )
+                    )}
+
+                    <option value="__new__">
+                      + Opprett ny underkategori
+                    </option>
+                  </>
+                )}
+
+            </select>
           </div>
 
+
+          {/* Create new subcategory */}
+          {showNewSubCategory && (
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+
+              <label
+                htmlFor="new_sub_category"
+                className="mb-2 block text-sm font-medium"
+              >
+                Ny underkategori
+              </label>
+
+              <div className="flex gap-2">
+
+                <input
+                  id="new_sub_category"
+                  type="text"
+                  value={
+                    newSubCategoryName
+                  }
+                  onChange={(event) =>
+                    setNewSubCategoryName(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Skriv her..."
+                  className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                />
+
+                <button
+                  type="button"
+                  onClick={
+                    createSubCategory
+                  }
+                  disabled={
+                    creatingSubCategory
+                  }
+                  className="rounded-lg bg-gray-900 px-5 py-3 font-medium text-white transition hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {creatingSubCategory
+                    ? "Oppretter..."
+                    : "Opprett"}
+                </button>
+
+              </div>
+            </div>
+          )}
+
+
+          {/* Image */}
           <div>
-  <label
-    htmlFor="image"
-    className="mb-2 block text-sm font-medium"
-  >
-    Produktbilde
-  </label>
+            <label
+              htmlFor="image"
+              className="mb-2 block text-sm font-medium"
+            >
+              Produktbilde
+            </label>
 
-  <input
-    id="image"
-    name="image"
-    type="file"
-    accept="image/*"
-    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
-  />
+            <input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+            />
 
-  <p className="mt-2 text-sm text-gray-500">
-    Maks 5 MB.
-  </p>
-</div>
+            <p className="mt-2 text-sm text-gray-500">
+              Maks 5 MB.
+            </p>
+          </div>
 
-          {/* Display an error only if the API request failed */}
+
+          {/* Error */}
           {error && (
             <p className="text-sm text-red-600">
               {error}
             </p>
           )}
 
-          {/* Submit the form and create the product */}
+
+          {/* Submit */}
           <button
             type="submit"
             className="w-full rounded-lg bg-orange-600 px-5 py-3 font-semibold text-white transition hover:bg-orange-700"
           >
             Legg til produkt
           </button>
+
         </form>
       </div>
     </main>
