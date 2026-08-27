@@ -27,7 +27,7 @@ export default async function AdminPage() {
     console.error(productsError);
   }
 
-   return (
+  return (
     // Main admin page container
     <main className="min-h-screen bg-[var(--main)] text-gray-900">
       <div className="mx-auto max-w-6xl px-6 py-10">
@@ -47,12 +47,22 @@ export default async function AdminPage() {
         </div>
 
         {/* Link to the page for creating a new product */}
-        <div className="mb-8">
+        {/* Admin actions */}
+        <div className="mb-8 flex flex-wrap gap-3">
+          {/* Create a new product */}
           <Link
             href="/admin/products/new"
-            className="inline-block rounded-lg bg-orange-600 px-5 py-3 font-semibold text-white transition hover:bg-orange-700"
+            className="rounded-lg bg-orange-600 px-5 py-3 font-semibold text-white transition hover:bg-orange-700"
           >
             + Legg til produkt
+          </Link>
+
+          {/* Manage subcategories */}
+          <Link
+            href="/admin/subcategories"
+            className="rounded-lg border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+          >
+            Administrer underkategorier
           </Link>
         </div>
 
@@ -71,31 +81,31 @@ export default async function AdminPage() {
               >
                 {/* Basic product information */}
                 <div className="flex items-center gap-5">
-  {/* Display the product image if one exists */}
-  {product.image_url ? (
-    <img
-      src={product.image_url}
-      alt={product.name}
-      className="h-20 w-20 rounded-lg object-cover"
-    />
-  ) : (
-    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400">
-      Ingen bilde
-    </div>
-  )}
+                  {/* Display the product image if one exists */}
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="h-20 w-20 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400">
+                      Ingen bilde
+                    </div>
+                  )}
 
-  {/* Product information */}
-  <div>
-    <h3 className="text-lg font-semibold">
-      {product.name}
-    </h3>
+                  {/* Product information */}
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      {product.name}
+                    </h3>
 
-    <div className="mt-2 flex gap-4 text-sm text-gray-500">
-      <span>{product.price} kr</span>
-      <span>{product.category}</span>
-    </div>
-  </div>
-</div>
+                    <div className="mt-2 flex gap-4 text-sm text-gray-500">
+                      <span>{product.price} kr</span>
+                      <span>{product.category}</span>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Actions for editing or deleting this specific product */}
                 <div className="flex items-center gap-3">
