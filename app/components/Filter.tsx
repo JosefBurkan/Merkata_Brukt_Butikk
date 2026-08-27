@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { categoryMap } from "@/lib/categories";
 
 type SubCategory = {
     id: number;
@@ -13,17 +14,6 @@ type FilterProps = {
     name: string;
 };
 
-// URL-navnet er litt annerledes enn navnet som lagres i databasen.
-// Eksempel:
-// /products/elektronikk -> Elektronikk
-const categoryMap: Record<string, string> = {
-    elektronikk: "Elektronikk",
-    mobler: "Møbler",
-    fritid: "Fritid",
-    klaer: "Klær",
-    musikk: "Musikk",
-    annet: "Annet",
-};
 
 export default function Filter({ name }: FilterProps) {
     const router = useRouter();

@@ -2,17 +2,7 @@ import { createClient } from "@/supabase/server";
 import { cookies } from "next/headers";
 import SearchBar from "@/app/components/SearchBar";
 import Filter from "@/app/components/Filter";
-
-// URL-navnet brukes som slug.
-// Verdien er det faktiske kategorinavnet som finnes i databasen.
-const categoryMap: Record<string, string> = {
-    elektronikk: "Elektronikk",
-    mobler: "Møbler",
-    fritid: "Fritid",
-    klaer: "Klær",
-    musikk: "Musikk",
-    annet: "Annet",
-};
+import { categoryMap } from "@/lib/categories";
 
 // params brukes når man går inn på kategorien.
 // searchParams brukes for søk og filtrering.

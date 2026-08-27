@@ -8,6 +8,7 @@ import {
 } from "react";
 
 import { useParams, useRouter } from "next/navigation";
+import { categories } from "@/lib/categories";
 
 type SubCategory = {
   id: number;
@@ -85,7 +86,7 @@ export default function EditProductPage() {
       if (!response.ok) {
         setError(
           data.error ??
-            "Kunne ikke hente underkategorier"
+          "Kunne ikke hente underkategorier"
         );
 
         setSubCategories([]);
@@ -126,7 +127,7 @@ export default function EditProductPage() {
         if (!response.ok) {
           setError(
             data.error ??
-              "Kunne ikke hente produktet"
+            "Kunne ikke hente produktet"
           );
 
           return;
@@ -272,7 +273,7 @@ export default function EditProductPage() {
       if (!response.ok) {
         setError(
           data.error ??
-            "Kunne ikke opprette underkategori"
+          "Kunne ikke opprette underkategori"
         );
 
         return;
@@ -357,7 +358,7 @@ export default function EditProductPage() {
       if (!uploadResponse.ok) {
         setError(
           uploadData.error ??
-            "Kunne ikke laste opp bildet"
+          "Kunne ikke laste opp bildet"
         );
 
         return;
@@ -422,7 +423,7 @@ export default function EditProductPage() {
     if (!response.ok) {
       setError(
         data.error ??
-          "Kunne ikke oppdatere produktet"
+        "Kunne ikke oppdatere produktet"
       );
 
       return;
@@ -576,9 +577,7 @@ export default function EditProductPage() {
             <select
               id="category"
               value={category}
-              onChange={
-                handleCategoryChange
-              }
+              onChange={handleCategoryChange}
               required
               className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
             >
@@ -586,29 +585,14 @@ export default function EditProductPage() {
                 Velg kategori
               </option>
 
-              <option value="Elektronikk">
-                Elektronikk
-              </option>
-
-              <option value="Møbler">
-                Møbler
-              </option>
-
-              <option value="Fritid">
-                Fritid
-              </option>
-
-              <option value="Klær">
-                Klær
-              </option>
-
-              <option value="Musikk">
-                Musikk
-              </option>
-
-              <option value="Annet">
-                Annet
-              </option>
+              {categories.map((category) => (
+                <option
+                  key={category}
+                  value={category}
+                >
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
 

@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/supabase/server";
 import { cloudinary } from "@/lib/cloudinary";
+import { categories } from "@/lib/categories";
 
-// GET request handler for /api/products/[id]
+// GET PRODUCT
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -12,7 +14,8 @@ export async function GET(
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Find the product where the database ID matches the ID from the URL
+  // Find the product where the database ID
+  // matches the ID from the URL
   const { data, error } = await supabase
     .from("Product")
     .select("*")
@@ -36,25 +39,60 @@ export async function GET(
   return Response.json(data);
 }
 
-// UPDATE request handler for /api/products/[id]
-// UPDATE request handler for /api/products/[id]
-// Updates a product and removes its old Cloudinary image if the image was replaced
+
+// UPDATE PRODUCT
+
+// Updates a product and removes its old
+// Cloudinary image if the image was replaced
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Get the product ID from the URL
   const { id } = await params;
 
-  // Create the authenticated server-side Supabase client
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Read the updated product data sent by the client
-  const body = await request.json();
 
-  // Get the current image ID before updating the product
-  const { data: currentProduct, error: fetchError } = await supabase
+  // CHECK ADMIN
+
+  const { data: claimsData, error: claimsError } =
+    await supabase.auth.getClaims();
+
+  if (
+    claimsError ||
+    !claimsData?.claims ||
+    claimsData.claims.sub !== process.env.ADMIN_USER_ID
+  ) {
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+
+  // READ REQUEST BODY
+
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json(
+      { error: "Ugyldig request body" },
+      { status: 400 }
+    );
+  }
+
+
+  // GET CURRENT PRODUCT
+
+  // We need the current image ID so we can remove
+  // the old Cloudinary image after a successful update.
+  const {
+    data: currentProduct,
+    error: fetchError,
+  } = await supabase
     .from("Product")
     .select("image_public_id")
     .eq("id", id)
@@ -63,7 +101,7 @@ export async function PATCH(
   if (fetchError) {
     return Response.json(
       { error: fetchError.message },
-      { status: 400 }
+      { status: 500 }
     );
   }
 
@@ -74,33 +112,232 @@ export async function PATCH(
     );
   }
 
-  // Update the product in Supabase
-  // RLS checks whether the current user has permission to update it
+
+  // VALIDATE NAME
+
+  if (
+    typeof body.name !== "string" ||
+    body.name.trim().length === 0
+  ) {
+    return Response.json(
+      { error: "Produktet må ha et navn" },
+      { status: 400 }
+    );
+  }
+
+  const name = body.name.trim();
+
+
+  // VALIDATE PRICE
+
+  if (
+    typeof body.price !== "number" ||
+    !Number.isFinite(body.price) ||
+    body.price < 0
+  ) {
+    return Response.json(
+      { error: "Ugyldig pris" },
+      { status: 400 }
+    );
+  }
+
+  const price = body.price;
+
+
+  // VALIDATE AGE
+
+  let age: number | null = null;
+
+  if (
+    body.age !== null &&
+    body.age !== undefined
+  ) {
+    if (
+      typeof body.age !== "number" ||
+      !Number.isInteger(body.age) ||
+      body.age < 0
+    ) {
+      return Response.json(
+        { error: "Ugyldig alder" },
+        { status: 400 }
+      );
+    }
+
+    age = body.age;
+  }
+
+
+  // VALIDATE DESCRIPTION
+
+  let description: string | null = null;
+
+  if (
+    body.description !== null &&
+    body.description !== undefined &&
+    body.description !== ""
+  ) {
+    if (typeof body.description !== "string") {
+      return Response.json(
+        { error: "Ugyldig beskrivelse" },
+        { status: 400 }
+      );
+    }
+
+    description = body.description.trim();
+  }
+
+
+  // VALIDATE CATEGORY
+
+  if (
+  typeof body.category !== "string" ||
+  !categories.includes(
+    body.category as (typeof categories)[number]
+  )
+) {
+  return Response.json(
+    { error: "Ugyldig kategori" },
+    { status: 400 }
+  );
+}
+
+  const category = body.category;
+
+
+  // VALIDATE SUBCATEGORY
+
+  if (
+    typeof body.sub_category !== "string" ||
+    body.sub_category.trim().length === 0
+  ) {
+    return Response.json(
+      { error: "Underkategori er påkrevd" },
+      { status: 400 }
+    );
+  }
+
+  const subCategory =
+    body.sub_category.trim();
+
+
+  // Make sure that the selected subcategory
+  // actually belongs to the selected category.
+  const {
+    data: existingSubCategory,
+    error: subCategoryError,
+  } = await supabase
+    .from("SubCategory")
+    .select("id")
+    .eq("category", category)
+    .eq("name", subCategory)
+    .maybeSingle();
+
+  if (subCategoryError) {
+    return Response.json(
+      {
+        error:
+          "Kunne ikke kontrollere underkategori",
+      },
+      { status: 500 }
+    );
+  }
+
+  if (!existingSubCategory) {
+    return Response.json(
+      {
+        error:
+          "Underkategorien finnes ikke i den valgte kategorien",
+      },
+      { status: 400 }
+    );
+  }
+
+
+  // VALIDATE IMAGE VALUES
+
+  const imageUrl =
+    typeof body.image_url === "string"
+      ? body.image_url
+      : null;
+
+  const imagePublicId =
+    typeof body.image_public_id === "string"
+      ? body.image_public_id
+      : null;
+
+
+  // CREATE SAFE UPDATE OBJECT
+
+  // Do not pass the original body directly to Supabase.
+  // Only these fields are allowed to be updated.
+  const updatedProduct = {
+    name,
+    age,
+    price,
+    description,
+    category,
+    sub_category: subCategory,
+    image_url: imageUrl,
+    image_public_id: imagePublicId,
+  };
+
+
+  // UPDATE PRODUCT
+
   const { data, error } = await supabase
     .from("Product")
-    .update(body)
+    .update(updatedProduct)
     .eq("id", id)
-    .select();
+    .select()
+    .single();
 
   if (error) {
+
+    // If a new image was already uploaded but the
+    // database update failed, remove the new image
+    // so it does not remain unused in Cloudinary.
+    if (
+      imagePublicId &&
+      imagePublicId !== currentProduct.image_public_id
+    ) {
+      try {
+        await cloudinary.uploader.destroy(
+          imagePublicId
+        );
+      } catch (cloudinaryError) {
+        console.error(
+          "Could not delete unused new image from Cloudinary:",
+          cloudinaryError
+        );
+      }
+    }
+
     return Response.json(
       { error: error.message },
       { status: 400 }
     );
   }
 
-  // Check whether a new Cloudinary image replaced the old one
-  const oldImagePublicId = currentProduct.image_public_id;
-  const newImagePublicId = body.image_public_id;
 
+  // DELETE OLD IMAGE
+
+  const oldImagePublicId =
+    currentProduct.image_public_id;
+
+  const newImagePublicId =
+    imagePublicId;
+
+  // If the image changed, remove the old image
+  // from Cloudinary after the database update succeeds.
   if (
     oldImagePublicId &&
     newImagePublicId &&
     oldImagePublicId !== newImagePublicId
   ) {
     try {
-      // Remove the old image from Cloudinary so unused files do not remain
-      await cloudinary.uploader.destroy(oldImagePublicId);
+      await cloudinary.uploader.destroy(
+        oldImagePublicId
+      );
     } catch (cloudinaryError) {
       console.error(
         "Could not delete old image from Cloudinary:",
@@ -109,25 +346,48 @@ export async function PATCH(
     }
   }
 
-  // Return the updated product
   return Response.json(data);
 }
 
-// DELETE request handler for /api/products/[id]
+
+// DELETE PRODUCT
+
 // Deletes the product and its Cloudinary image
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Get the product ID from the URL
   const { id } = await params;
 
-  // Create the authenticated server-side Supabase client
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Get the product first so we know which Cloudinary image belongs to it
-  const { data: product, error: fetchError } = await supabase
+
+  // CHECK ADMIN
+
+  const { data: claimsData, error: claimsError } =
+    await supabase.auth.getClaims();
+
+  if (
+    claimsError ||
+    !claimsData?.claims ||
+    claimsData.claims.sub !== process.env.ADMIN_USER_ID
+  ) {
+    return Response.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+
+  // GET PRODUCT
+
+  // Get the product first so we know which
+  // Cloudinary image belongs to it.
+  const {
+    data: product,
+    error: fetchError,
+  } = await supabase
     .from("Product")
     .select("image_public_id")
     .eq("id", id)
@@ -136,7 +396,7 @@ export async function DELETE(
   if (fetchError) {
     return Response.json(
       { error: fetchError.message },
-      { status: 400 }
+      { status: 500 }
     );
   }
 
@@ -147,7 +407,9 @@ export async function DELETE(
     );
   }
 
-  // Delete the product from Supabase
+  
+  // DELETE FROM SUPABASE
+
   const { data, error } = await supabase
     .from("Product")
     .delete()
@@ -161,10 +423,14 @@ export async function DELETE(
     );
   }
 
-  // If the product had an image, delete it from Cloudinary as well
+
+  // DELETE CLOUDINARY IMAGE
+
   if (product.image_public_id) {
     try {
-      await cloudinary.uploader.destroy(product.image_public_id);
+      await cloudinary.uploader.destroy(
+        product.image_public_id
+      );
     } catch (cloudinaryError) {
       console.error(
         "Could not delete image from Cloudinary:",
