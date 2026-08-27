@@ -9,6 +9,7 @@ import {
 
 import { useParams, useRouter } from "next/navigation";
 import { categories } from "@/lib/categories";
+import BackToAdmin from "@/app/components/BackToAdmin";
 
 type SubCategory = {
   id: number;
@@ -455,18 +456,21 @@ export default function EditProductPage() {
 
   return (
     <main className="min-h-screen bg-[var(--main)] text-gray-900">
-      <div className="mx-auto max-w-2xl px-6 py-10">
+  <div className="mx-auto max-w-2xl px-6 py-10">
 
-        {/* Page heading */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">
-            Rediger produkt
-          </h1>
+    <div className="mb-6">
+      <BackToAdmin />
+    </div>
 
-          <p className="mt-1 text-gray-600">
-            Endre informasjonen om produktet
-          </p>
-        </div>
+    <div className="mb-8">
+      <h1 className="text-3xl font-bold">
+        Rediger produkt
+      </h1>
+
+      <p className="mt-1 text-gray-600">
+        Endre informasjonen om produktet
+      </p>
+    </div>
 
 
         <form
