@@ -177,13 +177,14 @@ export default function About() {
                 justify-center
                 gap-3
                 rounded-xl
-                bg-white
                 px-6
                 py-3
                 font-semibold
                 text-card
                 transition
                 duration-200
+                bg-primary
+                hover:bg-primary-dark
                 hover:-translate-y-0.5
                 hover:shadow-lg
               "
