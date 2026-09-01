@@ -14,10 +14,18 @@ export default async function ProtectedAdminLayout({
   const { data, error } =
     await supabase.auth.getClaims();
 
+  /*
+   * User must:
+   *
+   * 1. Be authenticated.
+   * 2. Have valid claims.
+   * 3. Match the configured admin user ID.
+   */
   if (
     error ||
     !data?.claims ||
-    data.claims.sub !== process.env.ADMIN_USER_ID
+    data.claims.sub !==
+      process.env.ADMIN_USER_ID
   ) {
     redirect("/admin/login");
   }
