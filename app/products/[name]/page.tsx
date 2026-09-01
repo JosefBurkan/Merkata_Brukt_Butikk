@@ -2,6 +2,8 @@ import { createClient } from "@/supabase/server";
 import { cookies } from "next/headers";
 import SearchBar from "@/app/components/SearchBar";
 import Filter from "@/app/components/Filter";
+import ModalButton from "@/app/components/ModalButton";
+
 import { categoryMap } from "@/lib/categories";
 
 // params brukes når man går inn på kategorien.
@@ -26,6 +28,8 @@ export default async function Products({
         minPrice,
         sub_category,
     } = await searchParams;
+
+    // For modal
 
     // Gjør f.eks. "elektronikk" om til "Elektronikk"
     // og "mobler" om til "Møbler".
@@ -89,7 +93,8 @@ export default async function Products({
     }
 
     return (
-        <main>
+        <main className="transform-none
+        ">
             {/* Breadcrumb */}
             <p className="p-5 text-black">
                 Forside / Produkter / {category}
@@ -120,32 +125,31 @@ export default async function Products({
             )}
 
             {/* Produkter */}
-            <div className="product-list mx-auto grid-cols-1 justify-items-center gap-50 lg:grid-cols-3">
+            <div className="product-list mx-auto grid grid-cols-1 justify-items-center gap-50 lg:grid-cols-3 transform-none">
                 {products?.map((product) => (
-                    <div
-                        className="product-card"
-                        key={product.id}
-                    >
-                        {product.image_url ? (
-                            <img
-                                src={product.image_url}
-                                alt={product.name}
-                                className="h-[200px] w-full shrink-0 rounded-t-lg object-cover"
-                            />
-                        ) : (
-                            <div className="flex h-[200px] items-center justify-center">
-                                Ingen bilde
-                            </div>
-                        )}
+                    <ModalButton key={product.id} product={product}>
+                        <div className="product-card">
+                            {product.image_url ? (
+                                <img
+                                    src={product.image_url}
+                                    alt={product.name}
+                                    className="h-[200px] w-full shrink-0 rounded-t-lg object-cover"
+                                />
+                            ) : (
+                                <div className="flex h-[200px] items-center justify-center">
+                                    Ingen bilde
+                                </div>
+                            )}
 
-                        <p className="text-center text-2xl font-bold">
-                            {product.name}
-                        </p>
+                            <p className="text-center text-2xl font-bold">
+                                {product.name}
+                            </p>
 
-                        <p className="text-center text-lg font-bold">
-                            {product.price},-
-                        </p>
-                    </div>
+                            <p className="text-center text-lg font-bold">
+                                {product.price},-
+                            </p>
+                        </div>
+                    </ModalButton>
                 ))}
             </div>
         </main>
