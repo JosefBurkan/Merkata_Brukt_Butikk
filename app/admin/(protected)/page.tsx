@@ -253,7 +253,7 @@ export default async function AdminPage({
               duration-200
 
               hover:-translate-y-0.5
-              hover:primary-dark
+              hover:bg-primary-dark
               hover:shadow-md
             "
           >
