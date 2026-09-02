@@ -243,7 +243,7 @@ export default async function AdminPage({
             href="/admin/products/new"
             className="
               rounded-xl
-              bg-orange-600
+              bg-primary
               px-5
               py-3
               font-semibold
