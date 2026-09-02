@@ -5,9 +5,9 @@ import { createClient } from "@/supabase/server";
 
 import SearchBar from "@/app/components/SearchBar";
 import Filter from "@/app/components/Filter";
-import ModalButton from "@/app/components/ModalButton";
-
 import { categoryMap } from "@/lib/categories";
+
+import ModalButton from "@/app/components/ModalButton";
 
 type ProductsPageProps = {
   params: Promise<{
@@ -35,70 +35,6 @@ export default async function Products({
     sub_category,
   } = await searchParams;
 
-<<<<<<< HEAD
-    // For modal
-
-    // Gjør f.eks. "elektronikk" om til "Elektronikk"
-    // og "mobler" om til "Møbler".
-    const category = categoryMap[name];
-
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-
-    // Hvis URL-en inneholder en kategori som ikke finnes
-    if (!category) {
-        return (
-            <main className="p-10 text-center">
-                <h1 className="text-3xl font-bold">
-                    Kategorien finnes ikke
-                </h1>
-            </main>
-        );
-    }
-
-    let query = supabase
-        .from("Product")
-        .select("*")
-        .eq("category", category);
-
-    // Søk på produktnavn
-    if (search) {
-        query = query.ilike("name", `%${search}%`);
-    }
-
-    // Makspris
-    if (maxPrice) {
-        query = query.lte(
-            "price",
-            Number(maxPrice)
-        );
-    }
-
-    // Minimumspris
-    if (minPrice) {
-        query = query.gte(
-            "price",
-            Number(minPrice)
-        );
-    }
-
-    // Underkategori
-    if (sub_category) {
-        query = query.eq(
-            "sub_category",
-            sub_category
-        );
-    }
-
-    const {
-        data: products,
-        error,
-    } = await query;
-
-    if (error) {
-        console.error(error);
-    }
-=======
   /*
    * Converts the URL slug to the actual database category.
    *
@@ -107,27 +43,17 @@ export default async function Products({
    * mobler      -> Møbler
    */
   const category = categoryMap[name];
->>>>>>> ed381364eb054aa2cea0c2848b181ec27b2f0198
 
   /*
    * Invalid category.
    */
   if (!category) {
     return (
-<<<<<<< HEAD
-        <main className="transform-none
-        ">
-            {/* Breadcrumb */}
-            <p className="p-5 text-black">
-                Forside / Produkter / {category}
-            </p>
-=======
       <main className="flex flex-1 items-center justify-center bg-main px-6 py-20">
         <div className="text-center">
           <h1 className="text-3xl font-bold">
             Kategorien finnes ikke
           </h1>
->>>>>>> ed381364eb054aa2cea0c2848b181ec27b2f0198
 
           <p className="mt-4 opacity-75">
             Kategorien du prøver å åpne finnes ikke.
@@ -292,38 +218,6 @@ export default async function Products({
               </p>
             )}
 
-<<<<<<< HEAD
-            {/* Produkter */}
-            <div className="product-list mx-auto grid grid-cols-1 justify-items-center gap-50 lg:grid-cols-3 transform-none">
-                {products?.map((product) => (
-                    <ModalButton key={product.id} product={product}>
-                        <div className="product-card">
-                            {product.image_url ? (
-                                <img
-                                    src={product.image_url}
-                                    alt={product.name}
-                                    className="h-[200px] w-full shrink-0 rounded-t-lg object-cover"
-                                />
-                            ) : (
-                                <div className="flex h-[200px] items-center justify-center">
-                                    Ingen bilde
-                                </div>
-                            )}
-
-                            <p className="text-center text-2xl font-bold">
-                                {product.name}
-                            </p>
-
-                            <p className="text-center text-lg font-bold">
-                                {product.price},-
-                            </p>
-                        </div>
-                    </ModalButton>
-                ))}
-            </div>
-        </main>
-    );
-=======
           </div>
         </div>
 
@@ -365,8 +259,8 @@ export default async function Products({
 
             {/* Search */}
             <div className="mb-8">
-  <SearchBar className="w-full" />
-</div>
+                <SearchBar className="w-full" />
+            </div>
 
             {/* Database error */}
             {error && (
@@ -413,7 +307,8 @@ export default async function Products({
               products.length > 0 && (
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
 
-                  {products.map((product) => (
+                    {products.map((product) => (
+                        <ModalButton key={product.id} product={product}>
                     <article
                       key={product.id}
                       className="
@@ -509,7 +404,8 @@ export default async function Products({
 
                       </div>
 
-                    </article>
+                            </article>
+                    </ModalButton>
                   ))}
 
                 </div>
@@ -521,5 +417,4 @@ export default async function Products({
       </div>
     </main>
   );
->>>>>>> ed381364eb054aa2cea0c2848b181ec27b2f0198
 }

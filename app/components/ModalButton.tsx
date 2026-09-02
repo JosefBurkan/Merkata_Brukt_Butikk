@@ -40,19 +40,19 @@ export default function ModalButton({
             >
                 <div className="text-black">
                     <h2 className="text-2xl font-bold">
-                        {product.name}
+                        {product?.name}
                     </h2>
 
                     <p>
-                        Alder: {product.age} år
+                        Alder: {product?.age} år
                     </p>
 
                     <p>
-                        Beskrivelse: {product.description}
+                        Beskrivelse: {product?.description}
                     </p>
 
                     <p>
-                        Pris: {product.price},-
+                        Pris: {product?.price},-
                     </p>
                 </div>
             </Modal>
