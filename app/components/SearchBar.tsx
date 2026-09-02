@@ -1,41 +1,166 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-export default function SearchBar() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
-    const [search, setSearch] = useState(
-        searchParams.get("search") || ""
-    );
+type SearchBarProps = {
+  className?: string;
+};
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            const params = new URLSearchParams(searchParams.toString());
+export default function SearchBar({
+  className = "",
+}: SearchBarProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-            if (search.trim()) {
-                params.set("search", search);
-            } else {
-                params.delete("search");
-            }
+  const [search, setSearch] = useState(
+    searchParams.get("search") ?? ""
+  );
 
-            router.push(`?${params.toString()}`);
-        }, 400);
+  /*
+   * Live search.
+   *
+   * Every time the user types, we wait 300ms.
+   * If they type again before 300ms has passed,
+   * the previous timer is cancelled.
+   */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(
+        searchParams.toString()
+      );
 
-        return () => clearTimeout(timeout);
-    }, [search]);
+      const currentSearch =
+        searchParams.get("search") ?? "";
 
-    return (
+      const newSearch = search.trim();
 
-        <div className="search-container">
-            <input className="search-input"
-                type="text"
-                placeholder="Søk etter produkt..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                />
-        </div>
-    );
+      /*
+       * Do nothing if the URL already contains
+       * the same search value.
+       */
+      if (newSearch === currentSearch) {
+        return;
+      }
+
+      /*
+       * Add the search parameter if something
+       * has been entered.
+       */
+      if (newSearch) {
+        params.set("search", newSearch);
+      }
+
+      /*
+       * Remove the search parameter when
+       * the input is empty.
+       */
+      else {
+        params.delete("search");
+      }
+
+      const queryString = params.toString();
+
+      router.replace(
+        queryString
+          ? `${pathname}?${queryString}`
+          : pathname,
+        {
+          scroll: false,
+        }
+      );
+    }, 300);
+
+    /*
+     * Cancel the previous timer if the user
+     * types another character before 300ms.
+     */
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [
+    search,
+    pathname,
+    router,
+    searchParams,
+  ]);
+
+  return (
+    <div
+      className={`relative w-full ${className}`}
+    >
+      <input
+        type="text"
+        value={search}
+        onChange={(event) =>
+          setSearch(event.target.value)
+        }
+        placeholder="Søk etter produkt..."
+        className="
+          h-14
+          w-full
+          rounded-2xl
+          border
+          border-white/20
+          bg-card
+          px-5
+          pr-14
+          text-base
+          text-white
+          caret-white
+          outline-none
+          transition-all
+          duration-200
+          placeholder:text-white/60
+
+          hover:border-white/40
+
+          focus:border-white
+          focus:ring-2
+          focus:ring-white/40
+        "
+      />
+
+      {/* Search icon */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          right-5
+          top-1/2
+          -translate-y-1/2
+          text-white
+        "
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="21"
+          height="21"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+      </div>
+    </div>
+  );
 }

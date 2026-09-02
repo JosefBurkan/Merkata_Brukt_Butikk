@@ -1,182 +1,182 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { categoryMap } from "@/lib/categories";
-
-type SubCategory = {
-    id: number;
-    name: string;
-    category: string;
-};
+import {
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 type FilterProps = {
-    name: string;
+  name: string;
 };
 
+export default function Filter({
+  name,
+}: FilterProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-export default function Filter({ name }: FilterProps) {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-
-    // Underkategoriene som hentes fra databasen
-    const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-
-    // Brukes mens underkategoriene lastes inn
-    const [loading, setLoading] = useState(true);
-
-    // Hvis URL-en er "elektronikk",
-    // blir category "Elektronikk"
-    const category = categoryMap[name];
-
-
-    // =========================
-    // FETCH SUBCATEGORIES
-    // =========================
-
-    useEffect(() => {
-        async function fetchSubCategories() {
-            // Hvis kategorien i URL-en ikke finnes
-            if (!category) {
-                setSubCategories([]);
-                setLoading(false);
-                return;
-            }
-
-            setLoading(true);
-
-            try {
-                const response = await fetch(
-                    `/api/subcategories?category=${encodeURIComponent(category)}`
-                );
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    console.error(
-                        "Kunne ikke hente underkategorier:",
-                        data.error
-                    );
-
-                    setSubCategories([]);
-                    return;
-                }
-
-                setSubCategories(data);
-            } catch (error) {
-                console.error(
-                    "Kunne ikke hente underkategorier:",
-                    error
-                );
-
-                setSubCategories([]);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchSubCategories();
-    }, [category]);
-
-
-    // =========================
-    // PRICE FILTER
-    // =========================
-
-    function priceChange(value: string) {
-        const params = new URLSearchParams(
-            searchParams.toString()
-        );
-
-        if (value) {
-            params.set("maxPrice", value);
-        } else {
-            params.delete("maxPrice");
-        }
-
-        router.push(`?${params.toString()}`);
-    }
-
-
-    // =========================
-    // SUBCATEGORY FILTER
-    // =========================
-
-    function subCategoryChange(value: string) {
-        const params = new URLSearchParams(
-            searchParams.toString()
-        );
-
-        if (value) {
-            params.set("sub_category", value);
-        } else {
-            params.delete("sub_category");
-        }
-
-        router.push(`?${params.toString()}`);
-    }
-
-
-    return (
-        <main>
-
-            {/* Price filter */}
-            <div>
-                <select
-                    onChange={(event) =>
-                        priceChange(event.target.value)
-                    }
-                    value={
-                        searchParams.get("maxPrice") ?? ""
-                    }
-                >
-                    <option value="">
-                        Alle priser
-                    </option>
-
-                    <option value="500">
-                        Under 500 kr
-                    </option>
-
-                    <option value="1000">
-                        Under 1000 kr
-                    </option>
-
-                    <option value="2000">
-                        Under 2000 kr
-                    </option>
-                </select>
-            </div>
-
-
-            {/* Subcategory filter */}
-            <div>
-                <select
-                    onChange={(event) =>
-                        subCategoryChange(event.target.value)
-                    }
-                    value={
-                        searchParams.get("sub_category") ?? ""
-                    }
-                    disabled={loading}
-                >
-                    <option value="">
-                        {loading
-                            ? "Henter underkategorier..."
-                            : "Alle underkategorier"}
-                    </option>
-
-                    {subCategories.map((subCategory) => (
-                        <option
-                            key={subCategory.id}
-                            value={subCategory.name}
-                        >
-                            {subCategory.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-        </main>
+  const updateFilter = (
+    key: string,
+    value: string
+  ) => {
+    const params = new URLSearchParams(
+      searchParams.toString()
     );
+
+    if (value) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+
+    router.push(
+      `/products/${name}?${params.toString()}`
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+
+      {/* =========================
+          PRICE
+      ========================= */}
+
+      <div>
+        <label
+          htmlFor="price"
+          className="mb-2 block text-sm font-semibold"
+        >
+          Pris
+        </label>
+
+        <select
+          id="price"
+          defaultValue={
+            searchParams.get("maxPrice") ?? ""
+          }
+          onChange={(event) =>
+            updateFilter(
+              "maxPrice",
+              event.target.value
+            )
+          }
+          className="
+            h-11
+            w-full
+            cursor-pointer
+            rounded-lg
+            border
+            border-white/20
+            bg-white
+            px-3
+            text-sm
+            text-black
+            outline-none
+            transition
+
+            focus:border-white
+            focus:ring-2
+            focus:ring-white/40
+          "
+        >
+          <option
+            value=""
+            className="text-black"
+          >
+            Alle priser
+          </option>
+
+          <option
+            value="100"
+            className="text-black"
+          >
+            Under 100 kr
+          </option>
+
+          <option
+            value="250"
+            className="text-black"
+          >
+            Under 250 kr
+          </option>
+
+          <option
+            value="500"
+            className="text-black"
+          >
+            Under 500 kr
+          </option>
+
+          <option
+            value="1000"
+            className="text-black"
+          >
+            Under 1000 kr
+          </option>
+        </select>
+      </div>
+
+
+      {/* =========================
+          SUBCATEGORY
+      ========================= */}
+
+      <div>
+        <label
+          htmlFor="sub-category"
+          className="mb-2 block text-sm font-semibold"
+        >
+          Underkategori
+        </label>
+
+        <select
+          id="sub-category"
+          defaultValue={
+            searchParams.get(
+              "sub_category"
+            ) ?? ""
+          }
+          onChange={(event) =>
+            updateFilter(
+              "sub_category",
+              event.target.value
+            )
+          }
+          className="
+            h-11
+            w-full
+            cursor-pointer
+            rounded-lg
+            border
+            border-white/20
+            bg-white
+            px-3
+            text-sm
+            text-black
+            outline-none
+            transition
+
+            focus:border-white
+            focus:ring-2
+            focus:ring-white/40
+          "
+        >
+          <option
+            value=""
+            className="text-black"
+          >
+            Alle underkategorier
+          </option>
+
+          <option
+            value="Annet"
+            className="text-black"
+          >
+            Annet
+          </option>
+        </select>
+      </div>
+
+    </div>
+  );
 }
