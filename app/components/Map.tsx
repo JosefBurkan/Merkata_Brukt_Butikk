@@ -2,7 +2,7 @@
 
 import { GoogleMapsEmbed } from '@next/third-parties/google'
 
-const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
 
 export default function Map()
 {
