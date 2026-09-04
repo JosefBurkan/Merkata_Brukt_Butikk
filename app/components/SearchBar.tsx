@@ -120,7 +120,7 @@ export default function SearchBar({
           transition-all
           duration-200
           placeholder:text-black
-
+ 
           hover:border-black/40
 
           focus:border-black
