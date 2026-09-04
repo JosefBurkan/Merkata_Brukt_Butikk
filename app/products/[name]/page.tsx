@@ -203,7 +203,7 @@ export default async function Products({
         </nav>
 
 
-        {/* =========================
+        {/* ========================= 
             PAGE HEADER
         ========================= */}
 
