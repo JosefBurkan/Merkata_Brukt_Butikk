@@ -6,8 +6,8 @@ import Modal from "./Modal";
 type Product = {
     id: number;
     name: string;
-    age: number;
-    description: string;
+    age?: number;
+    description?: string;
     price: number;
 };
 
