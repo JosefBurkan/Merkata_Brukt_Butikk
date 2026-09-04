@@ -6,33 +6,25 @@ export default function About() {
       <div className="mx-auto w-full max-w-6xl px-6 py-12 md:px-10 md:py-16 lg:px-12">
 
       {/* Breadcrumbs */}
-      <nav
-          aria-label="Breadcrumb"
-          className="mb-8 flex flex-wrap items-center gap-2 text-sm"
-        >
-          <Link
-            href="/"
-            className="opacity-70 transition hover:opacity-100"
-          >
-            Forside
-          </Link>
+<nav
+  aria-label="Breadcrumb"
+  className="mb-8 flex flex-wrap items-center gap-2 text-sm"
+>
+  <Link
+    href="/"
+    className="opacity-70 transition hover:opacity-100"
+  >
+    Forside
+  </Link>
 
-          <span className="opacity-40">
-            /
-          </span>
+  <span className="opacity-40">
+    /
+  </span>
 
-<<<<<<< HEAD
-          <p
-=======
-          <Link
-            href="/categories"
->>>>>>> 1564249 (Changed some button colors and added social media links in footer)
-            className="font-semibold"
-          >
-            Om oss
-          </Link>
-
-        </nav>
+  <span className="font-semibold">
+    Om oss
+  </span>
+</nav>
         
 
         {/* =========================

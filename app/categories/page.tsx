@@ -65,12 +65,8 @@ export default function Categories() {
                         /
                     </span>
 
-<<<<<<< HEAD
-                    <p
-=======
                     <Link
                         href="/categories"
->>>>>>> 1564249 (Changed some button colors and added social media links in footer)
                         className="font-semibold"
                     >
                         Produkter
