@@ -65,11 +65,12 @@ export default function Categories() {
                         /
                     </span>
 
-                    <p
+                    <Link
+                        href="/categories"
                         className="font-semibold"
                     >
                         Produkter
-                    </p>
+                    </Link>
 
                 </nav>
                         

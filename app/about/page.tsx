@@ -21,11 +21,12 @@ export default function About() {
             /
           </span>
 
-          <p
-            className="font-semibold"
-          >
-            Om oss
-          </p>
+          <Link
+                        href="/about"
+                        className="font-semibold"
+                    >
+                        Om oss
+                    </Link>
 
         </nav>
         
