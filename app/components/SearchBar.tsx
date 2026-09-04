@@ -110,23 +110,22 @@ export default function SearchBar({
           w-full
           rounded-2xl
           border
-          border-white/20
+          border-black/20
           bg-card
           px-5
           pr-14
           text-base
-          text-white
           caret-white
           outline-none
           transition-all
           duration-200
-          placeholder:text-white/60
+          placeholder:text-black
+ 
+          hover:border-black/40
 
-          hover:border-white/40
-
-          focus:border-white
+          focus:border-black
           focus:ring-2
-          focus:ring-white/40
+          focus:ring-black/10
         "
       />
 
@@ -138,7 +137,7 @@ export default function SearchBar({
           right-5
           top-1/2
           -translate-y-1/2
-          text-white
+          text-black
         "
       >
         <svg
