@@ -5,6 +5,7 @@ export const categories = [
   "Klær",
   "Musikk",
   "Annet",
+  "Alt"
 ] as const;
 
 
@@ -20,4 +21,5 @@ export const categoryMap: Record<string, Category> = {
   klaer: "Klær",
   musikk: "Musikk",
   annet: "Annet",
+  alt: "Alt",
 };

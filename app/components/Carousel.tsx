@@ -1,5 +1,7 @@
 "use client";
 
+import ModalButton from "@/app/components/ModalButton";
+
 import { useState } from "react";
 
 type Product = {
@@ -80,35 +82,38 @@ export default function Carousel({
    */
   const renderProduct = (product: Product) => {
     return (
-      <div className="h-[300px] w-[300px] overflow-hidden rounded-[10px] bg-card transition duration-200 hover:-translate-y-[5px] hover:shadow-xl">
+        <div className="h-[300px] w-[300px] overflow-hidden rounded-[10px] bg-card transition duration-200 hover:-translate-y-[5px] hover:shadow-xl">
+            
+        <ModalButton key={product.id} product={product}>
 
-        {/* Product image */}
-        {product.image_url ? (
-          <img
-            src={product.image_url}
-            alt={product.name}
-            className="h-[190px] w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-[190px] w-full items-center justify-center bg-black/10">
-            Ingen bilde
-          </div>
-        )}
+            {/* Product image */}
+            {product.image_url ? (
+            <img
+                src={product.image_url}
+                alt={product.name}
+                className="h-[190px] w-full object-cover"
+            />
+            ) : (
+            <div className="flex h-[190px] w-full items-center justify-center bg-black/10">
+                Ingen bilde
+            </div>
+            )}
 
-        {/* Product information */}
-        <div className="px-3 py-1">
-          <p className="truncate text-2xl font-bold">
-            {product.name}
-          </p>
+            {/* Product information */}
+            <div className="px-3 py-1">
+            <p className="truncate text-2xl font-bold">
+                {product.name}
+            </p>
 
-          <p className="text-lg font-bold">
-            {product.category}
-          </p>
+            <p className="text-lg font-bold">
+                {product.category}
+            </p>
 
-          <p className="text-lg font-bold">
-            {product.price},-
-          </p>
-        </div>
+            <p className="text-lg font-bold">
+                {product.price},-
+            </p>
+            </div>
+        </ModalButton>
       </div>
     );
   };

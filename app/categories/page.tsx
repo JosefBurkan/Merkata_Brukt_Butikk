@@ -41,11 +41,13 @@ const categories = [
 
 export default function Categories() {
   return (
-    <main className="min-h-screen flex-1 bg-page text-gray-900">
+      <main className="min-h-screen flex-1 bg-page text-gray-900">
+          
+        <section className="px-5 py-14 md:px-8 md:py-20 lg:px-12">
+            
+            <div className="mx-auto w-full max-w-7xl">
+                  
 
-      <section className="px-5 py-14 md:px-8 md:py-20 lg:px-12">
-
-        <div className="mx-auto w-full max-w-7xl">
 
           {/* =========================
               HEADER
@@ -63,18 +65,27 @@ export default function Categories() {
 
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">
               Finn det du leter etter ved å utforske produktene våre etter
-              kategori.
+            kategori.                          
             </p>
+                      
+                      
+                  </div>
+                  
+        <div className="pb-5 font-semibold text-gray-700 transition hover:text-brand">
+            <Link
+                href="products/alt">
+                Se alle produkter her ->  
+            </Link>
+        </div>
+                  
 
-          </div>
-
-
+                  
           {/* =========================
               CATEGORY GRID
           ========================= */}
-
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-
+                  
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                      
             {categories.map((category) => (
               <Link
                 key={category.slug}

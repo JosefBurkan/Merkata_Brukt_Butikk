@@ -76,13 +76,28 @@ export default async function Products({
   /*
    * Start query.
    */
-  let query = supabase
-    .from("Product")
-    .select("*")
-    .eq("category", category)
-    .order("created_at", {
-      ascending: false,
-    });
+    let query;
+
+    if (category === "Alt")
+    {
+        query = supabase
+        .from("Product")
+        .select("*")
+        .order("created_at", {
+          ascending: false,
+        });
+    }
+    else 
+    {
+        query = supabase
+        .from("Product")
+        .select("*")
+        .eq("category", category)
+        .order("created_at", {
+          ascending: false,
+        });
+    }
+
 
   /*
    * Search by product name.
