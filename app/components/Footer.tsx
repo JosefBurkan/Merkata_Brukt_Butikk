@@ -62,7 +62,7 @@ export default function Footer() {
       "
     >
       <img
-        src="/instagram.svg"
+        src="/public/instagram.svg"
         alt=""
         className="h-12 w-12 object-contain"
       />
@@ -95,7 +95,7 @@ export default function Footer() {
       "
     >
       <img
-        src="/facebook.svg"
+        src="/public/facebook.svg"
         alt=""
         className="h-12 w-12 object-contain"
       />
