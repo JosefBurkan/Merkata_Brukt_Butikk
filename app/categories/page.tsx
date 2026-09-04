@@ -42,11 +42,38 @@ const categories = [
 export default function Categories() {
   return (
       <main className="min-h-screen flex-1 bg-page text-gray-900">
-          
-        <section className="px-5 py-14 md:px-8 md:py-20 lg:px-12">
             
-            <div className="mx-auto w-full max-w-7xl">
+          
+          <section className="px-5 py-14 md:px-8 md:py-20 lg:px-12">
+              
+            
+              <div className="mx-auto w-full max-w-7xl">
                   
+                {/* Breadcrumbs */}
+                <nav
+                    aria-label="Breadcrumb"
+                    className="mb-8 flex flex-wrap items-center gap-2 text-sm"
+                    >
+                    <Link
+                        href="/"
+                        className="opacity-70 transition hover:opacity-100"
+                    >
+                        Forside
+                    </Link>
+
+                    <span className="opacity-40">
+                        /
+                    </span>
+
+                    <p
+                        href="/categories"
+                        className="font-semibold"
+                    >
+                        Produkter
+                    </p>
+
+                </nav>
+                        
 
 
           {/* =========================

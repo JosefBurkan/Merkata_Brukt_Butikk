@@ -5,6 +5,32 @@ export default function About() {
     <main className="flex-1 bg-main">
       <div className="mx-auto w-full max-w-6xl px-6 py-12 md:px-10 md:py-16 lg:px-12">
 
+      {/* Breadcrumbs */}
+      <nav
+          aria-label="Breadcrumb"
+          className="mb-8 flex flex-wrap items-center gap-2 text-sm"
+        >
+          <Link
+            href="/"
+            className="opacity-70 transition hover:opacity-100"
+          >
+            Forside
+          </Link>
+
+          <span className="opacity-40">
+            /
+          </span>
+
+          <p
+            href="/categories"
+            className="font-semibold"
+          >
+            Om oss
+          </p>
+
+        </nav>
+        
+
         {/* =========================
             PAGE HEADER
         ========================= */}

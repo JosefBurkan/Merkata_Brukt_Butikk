@@ -131,7 +131,6 @@ export default function Carousel({
         ←
       </button>
 
-
       {/* Products */}
       <div className="grid w-full max-w-[1000px] grid-cols-1 justify-items-center gap-8 lg:grid-cols-3">
 
@@ -142,7 +141,6 @@ export default function Carousel({
         {renderProduct(nextProduct)}
 
       </div>
-
 
       {/* Next button */}
       <button
