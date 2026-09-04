@@ -74,7 +74,7 @@ export default function Categories() {
         <div className="pb-5 font-semibold text-gray-700 transition hover:text-brand">
             <Link
                 href="products/alt">
-                Se alle produkter her ->  
+                Se alle produkter her →  
             </Link>
         </div>
                   
