@@ -1174,7 +1174,7 @@ export default function NewProductPage() {
                 className="
                   min-w-[180px]
                   rounded-xl
-                  bg-orange-600
+                  bg-primary
                   px-6
                   py-3
                   font-semibold
@@ -1182,7 +1182,7 @@ export default function NewProductPage() {
                   shadow-sm
                   transition
 
-                  hover:bg-orange-700
+                  hover:bg-primary-dark
                   hover:shadow-md
 
                   disabled:cursor-not-allowed

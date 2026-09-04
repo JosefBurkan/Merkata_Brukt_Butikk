@@ -1450,7 +1450,7 @@ export default function EditProductPage() {
                 {newImagePreview && (
                   <label
                     htmlFor="image"
-                    className="mt-3 inline-block cursor-pointer text-sm font-medium text-orange-600 hover:text-orange-700 hover:underline"
+                    className="mt-3 inline-block cursor-pointer text-sm font-medium text-bg-brand hover:text-bg-brand-dark hover:underline"
                   >
                     Velg et annet bilde
                   </label>
@@ -1515,7 +1515,7 @@ export default function EditProductPage() {
                 className="
                   min-w-[180px]
                   rounded-xl
-                  bg-orange-600
+                  bg-primary
                   px-6
                   py-3
                   font-semibold
@@ -1523,7 +1523,7 @@ export default function EditProductPage() {
                   shadow-sm
                   transition
 
-                  hover:bg-orange-700
+                  hover:bg-primary-dark
                   hover:shadow-md
 
                   disabled:cursor-not-allowed

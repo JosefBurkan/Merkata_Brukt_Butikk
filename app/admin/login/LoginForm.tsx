@@ -377,14 +377,14 @@ export default function LoginForm() {
                 justify-center
                 gap-2
                 rounded-xl
-                bg-orange-600
+                bg-primary
                 px-5
                 font-semibold
                 text-white
                 shadow-sm
                 transition
 
-                hover:bg-orange-700
+                hover:bg-primary-dark
                 hover:shadow-md
 
                 disabled:cursor-not-allowed

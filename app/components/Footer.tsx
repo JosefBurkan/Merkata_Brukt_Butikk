@@ -10,9 +10,11 @@ export default function Footer() {
 
         <div className="grid grid-cols-1 gap-10 text-center md:grid-cols-3">
 
-          {/* Store */}
-          <div>
+          {/* =========================
+              STORE
+          ========================= */}
 
+          <div>
             <h3 className="text-base font-bold">
               MERKATÅ BRUKTBUTIKK
             </h3>
@@ -22,10 +24,92 @@ export default function Footer() {
               vintage, retro og brukte skatter.
             </p>
 
+
+            {/* =========================
+    SOCIAL MEDIA
+========================= */}
+
+<div className="mt-6">
+  <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-white/70">
+    Følg oss
+  </p>
+
+  <div className="flex items-center justify-center gap-4">
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/merkatabrukthandel/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Besøk Merkatå Bruktbutikk på Instagram"
+      className="
+        flex
+        h-13
+        w-13
+        items-center
+        justify-center
+        rounded-full
+        border
+        border-white/20
+        bg-white/5
+        transition
+        duration-200
+
+        hover:-translate-y-1
+        hover:border-brand
+        hover:bg-brand
+        hover:shadow-lg
+      "
+    >
+      <img
+        src="/icons/instagram.svg"
+        alt=""
+        className="h-12 w-12 object-contain"
+      />
+    </a>
+
+
+    {/* Facebook */}
+    <a
+      href="https://www.facebook.com/p/Merkat%C3%A5-bruktbutikk-100054623161104/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Besøk Merkatå Bruktbutikk på Facebook"
+      className="
+        flex
+        h-13
+        w-13
+        items-center
+        justify-center
+        rounded-full
+        border
+        border-white/20
+        bg-white/5
+        transition
+        duration-200
+
+        hover:-translate-y-1
+        hover:border-brand
+        hover:bg-brand
+        hover:shadow-lg
+      "
+    >
+      <img
+        src="/icons/facebook.svg"
+        alt=""
+        className="h-12 w-12 object-contain"
+      />
+    </a>
+
+  </div>
+</div>
           </div>
 
 
-          {/* Opening hours */}
+          {/* =========================
+              OPENING HOURS
+          ========================= */}
+
           <div>
 
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white/90">
@@ -33,15 +117,18 @@ export default function Footer() {
             </h3>
 
             <p className="mt-4 text-sm leading-6 text-white/65">
-              Tir–Fre 11–18
+              Tir-Fre 11-18
               <br />
-              Lør–Søn 12–18
+              Lør-Søn 12-18
             </p>
 
           </div>
 
 
-          {/* Contact */}
+          {/* =========================
+              CONTACT
+          ========================= */}
+
           <div>
 
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white/90">
