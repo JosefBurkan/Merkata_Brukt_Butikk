@@ -66,7 +66,6 @@ export default function Categories() {
                     </span>
 
                     <p
-                        href="/categories"
                         className="font-semibold"
                     >
                         Produkter

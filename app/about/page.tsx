@@ -22,7 +22,6 @@ export default function About() {
           </span>
 
           <p
-            href="/categories"
             className="font-semibold"
           >
             Om oss
